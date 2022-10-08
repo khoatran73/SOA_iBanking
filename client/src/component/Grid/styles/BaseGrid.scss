@@ -1,0 +1,82 @@
+$border-color: #e9e9e9;
+$header-color: #333;
+$cell-padding: 11px;
+.base-grid {
+    .ag-root-wrapper {
+        border-color: $border-color;
+        /* width - height */
+        ::-webkit-scrollbar {
+            width: 8px; //dọc
+            height: 5px; //ngang
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background-color: #babac0;
+            opacity: 0.8;
+            border-radius: 16px;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            opacity: 1;
+        }
+
+        .ag-header.ag-pivot-off {
+            border-color: $border-color;
+        }
+
+        .ag-header {
+            .ag-header-row {
+                .ag-header-cell {
+                    padding-left: $cell-padding;
+                    padding-right: $cell-padding;
+                    .ag-header-cell-label {
+                        color: $header-color;
+                        display: flex;
+                        justify-content: center;
+                    }
+                }
+            }
+
+            .ag-header-row:not(:first-child) .ag-header-cell {
+                border-color: $border-color;
+            }
+
+            .ag-header-group-cell-label {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+
+        .ag-row {
+            .ag-cell {
+                padding-left: $cell-padding;
+                padding-right: $cell-padding;
+            }
+        }
+
+        .ag-header-cell-resize::after {
+            width: 1px;
+            height: 100%;
+            top: 0;
+            background-color: $border-color;
+        }
+
+        .ag-paging-panel {
+            border-color: $border-color;
+        }
+    }
+
+    .ag-ltr {
+        .ag-cell-focus:not(.ag-cell-range-selected):focus-within {
+            border-color: transparent !important;
+        }
+    }
+}
