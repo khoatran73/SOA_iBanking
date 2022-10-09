@@ -1,91 +1,95 @@
-import { Response, Request } from 'express';
-import { ApiResponse, ResponseOk } from '../common/ApiResponse';
-import { AuthUser } from '../types/Identity';
-import { Menu, MenuLayout } from '../types/Menu';
+import { Request, Response } from 'express';
+import _ from 'lodash';
+import { ResponseFail, ResponseOk } from '../common/ApiResponse';
+import { PaginatedListConstructor, PaginatedListQuery } from '../common/PaginatedList';
+import Menu from '../Models/Menu';
+import { IMenu, MenuLayout } from '../types/Menu';
+import { Identifier } from '../types/shared';
 
-export const getMenuIndex = (req: Request, res: Response) => {
-    const result: Menu[] = [
-        {
-            id: 'f25e75d7-02be-48ce-88ff-8dfdb24155e2',
-            name: 'Hệ thống',
-            route: '/admin/system',
-            icon: 'user-gear',
-            parentId: '2b858bf8-1028-4fa7-90ea-79868d9d42fd',
-            background: '#030303',
-            path: '2b858bf8-1028-4fa7-90ea-79868d9d42fd.f25e75d7-02be-48ce-88ff-8dfdb24155e2',
-            permissions: [],
-            children: [
-                {
-                    id: 'fe102cca-93d3-49b3-96a4-c5d611e61c77',
-                    name: 'Menu',
-                    route: '/admin/system/menu',
-                    icon: 'home',
-                    parentId: 'f25e75d7-02be-48ce-88ff-8dfdb24155e2',
-                    background: '#c9c9c9',
-                    path: '2b858bf8-1028-4fa7-90ea-79868d9d42fd.f25e75d7-02be-48ce-88ff-8dfdb24155e2.fe102cca-93d3-49b3-96a4-c5d611e61c77',
-                    isDisplay: true,
-                    displayIndex: null,
-                    permissions: [],
-                    children: null,
-                },
-            ],
-        },
-    ];
+export const getMenuIndex = async (req: Request<any, any, any, PaginatedListQuery>, res: Response) => {
+    const menus = await Menu.find();
 
-    return res.json(ResponseOk<Menu[]>(result));
+    const result = PaginatedListConstructor<IMenu>(menus, req.query.offset, req.query.limit);
+
+    return res.json(ResponseOk<IMenu[]>(result));
 };
 
-export const getMenuLayout = (req: Request, res: Response) => {
-    const result: MenuLayout[] = [
-        {
-            key: 'f25e75d7-02be-48ce-88ff-8dfdb24155e2',
-            name: 'Hệ thống',
-            route: '/admin/system',
-            icon: 'user-gear',
-            parentKey: '2b858bf8-1028-4fa7-90ea-79868d9d42fd',
-            background: '#030303',
-            isDisplay: true,
-            level: 1,
-            badgeNumber: 0,
-            active: true,
-            path: '2b858bf8-1028-4fa7-90ea-79868d9d42fd.f25e75d7-02be-48ce-88ff-8dfdb24155e2',
-            breadcrumbs: ['Hệ thống'],
-            isLeaf: false,
-            hasPermissionToAccess: true,
-        },
-        {
-            key: '62f75944-01e4-4bca-921c-27bc6d4d308b',
-            name: 'Vai trò',
-            route: '/system/role',
-            icon: 'users-gear',
-            parentKey: 'f25e75d7-02be-48ce-88ff-8dfdb24155e2',
-            background: '#c9c9c9',
-            isDisplay: true,
-            level: 2,
-            badgeNumber: 0,
-            active: true,
-            path: '2b858bf8-1028-4fa7-90ea-79868d9d42fd.f25e75d7-02be-48ce-88ff-8dfdb24155e2.62f75944-01e4-4bca-921c-27bc6d4d308b',
-            breadcrumbs: ['Hệ thống', 'Vai trò'],
-            isLeaf: false,
-            hasPermissionToAccess: true,
-        },
-        {
-            key: 'fe102cca-93d3-49b3-96a4-c5d611e61c77',
-            name: 'Menu',
-            route: '/system/menu',
-            icon: 'gear',
-            parentKey: 'f25e75d7-02be-48ce-88ff-8dfdb24155e2',
-            background: '#c9c9c9',
-            isDisplay: true,
-            level: 2,
-            badgeNumber: 0,
-            active: true,
-            path: '2b858bf8-1028-4fa7-90ea-79868d9d42fd.f25e75d7-02be-48ce-88ff-8dfdb24155e2.fe102cca-93d3-49b3-96a4-c5d611e61c77',
-            breadcrumbs: ['Hệ thống', 'Menu'],
-            isLeaf: false,
-            hasPermissionToAccess: true,
-        },
-    ];
+export const getMenuLayout = async (req: Request, res: Response) => {
+    const menus = await Menu.find();
+
+    const result = menus.map(menu => {
+        return {
+            key: menu.id,
+            name: menu.name,
+            route: menu.route,
+            icon: menu.icon,
+            parentKey: menu.parentId,
+            background: menu.background,
+            isDisplay: menu.isDisplay,
+            level: menu.level,
+            path: menu.path,
+            breadcrumbs: menu.path?.split('.').map(id => menus.find(m => m.id === id)?.name),
+        } as MenuLayout;
+    });
 
     return res.json(ResponseOk<MenuLayout[]>(result));
+};
+
+export const addMenu = async (req: Request<any, any, IMenu>, res: Response) => {
+    try {
+        const isExistMenu = Boolean(await Menu.findOne({ route: req.body.route }));
+
+        if (isExistMenu) {
+            return res.json(ResponseFail('Route đã tồn tại!'));
+        }
+
+        const parentMenu = await Menu.findOne({ id: req.body.parentId });
+
+        const menu = new Menu({
+            ...req.body,
+        });
+
+        menu.setPath(parentMenu?.path);
+
+        menu.save();
+
+        return res.json(ResponseOk());
+    } catch (err) {
+        return res.json(ResponseFail(_.get(err, 'message')));
+    }
+};
+
+export const updateMenu = async (req: Request<{ id: Identifier }, any, IMenu>, res: Response) => {
+    const id = req.params.id;
+
+    const menu = await Menu.findOne({ id: id });
+
+    if (!menu) {
+        return res.json(ResponseFail('Không tìm thấy Menu!'));
+    }
+
+    await Menu.updateOne(
+        { id: id },
+        {
+            ...req.body,
+        },
+    );
+
+    return res.json(ResponseOk());
+};
+
+export const deleteMenu = async (req: Request<any, any, IMenu>, res: Response) => {
+    // try {
+    //     const isExistMenu = Boolean(await Menu.findOne({ route: req.body.route }));
+    //     if (isExistMenu) {
+    //         return res.json(ResponseFail('Route đã tồn tại!'));
+    //     }
+    //     const user = new Menu({
+    //         ...req.body,
+    //     });
+    //     user.save();
+    //     return res.json(ResponseOk());
+    // } catch (err) {
+    //     return res.json(ResponseFail(_.get(err, 'message')));
+    // }
 };

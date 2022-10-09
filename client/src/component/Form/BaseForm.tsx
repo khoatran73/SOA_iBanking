@@ -1,5 +1,6 @@
 import { Form, FormInstance } from 'antd';
 import { NamePath } from 'antd/lib/form/interface';
+import clsx from 'clsx';
 import React, { useImperativeHandle, useRef } from 'react';
 
 export interface BaseFormProps {
@@ -9,6 +10,8 @@ export interface BaseFormProps {
     labelAlign?: 'left' | 'right';
     disabled?: boolean;
     baseFormItem?: BaseFormItem[];
+    className?: string;
+    width?: number | string;
     renderBtnBottom?: () => JSX.Element;
 }
 
@@ -16,6 +19,8 @@ export interface BaseFormItem {
     label: React.ReactNode;
     name: string;
     rules?: Array<Record<string, any>>;
+    initialValue?: any;
+    valuePropName?: string;
     children?: React.ReactNode;
 }
 
@@ -53,7 +58,7 @@ const BaseForm = React.forwardRef<BaseFormRef, BaseFormProps>((props, ref) => {
     }));
 
     return (
-        <div>
+        <div className={clsx('w-full h-full', props.className)}>
             <Form
                 labelCol={{ span: props.labelCol ?? 6 }}
                 wrapperCol={{ span: 24 - Number(props.labelCol ?? 6) }}
@@ -63,6 +68,9 @@ const BaseForm = React.forwardRef<BaseFormRef, BaseFormProps>((props, ref) => {
                 labelAlign={props.labelAlign}
                 layout={props.layout}
                 disabled={props.disabled}
+                style={{
+                    width: props.width,
+                }}
             >
                 {props.baseFormItem?.map(item => {
                     return (

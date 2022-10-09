@@ -1,46 +1,46 @@
-import React, { ReactChild, useImperativeHandle, useRef } from 'react';
+import { faEdit, faFile, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { ColDef, ColGroupDef } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { AgGridReact } from 'ag-grid-react';
-import { ColDef, ColGroupDef, ColumnApi, Grid, GridApi, GridOptions, RowNode } from 'ag-grid-community';
-import Loading from '../Elements/loading/Loading';
-import { GridToolbar, GridToolbarProps } from './Components/GridToolbar';
-import './styles/BaseGrid.scss';
 import _ from 'lodash';
-import { BaseIcon } from '../Icon/BaseIcon';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import React, { ReactChild, useImperativeHandle, useRef } from 'react';
 import { ButtonBase } from '../Elements/Button/ButtonBase';
+import Loading from '../Elements/loading/Loading';
+import './styles/BaseGrid.scss';
 
 export interface BaseGridColDef extends ColDef, Partial<ColGroupDef> {}
 
 export interface BaseGridProps {
     columnDefs: BaseGridColDef[];
-    data: any[];
+    data: any[] | undefined;
     defaultColDef?: BaseGridColDef;
     gridConfig?: GridConfig;
     numberRows?: boolean;
     actionRows?: boolean;
+    actionRowsList?: {
+        hasEditBtn?: boolean;
+        hasDeleteBtn?: boolean;
+        hasDetailBtn?: boolean;
+        hasCreateChildBtn?: boolean;
+        onClickEditBtn?: (data: any) => void;
+        onClickDeleteBtn?: (data: any) => void;
+        onClickDetailBtn?: (data: any) => void;
+        onClickCreateChildBtn?: (data: any) => void;
+    };
     actionRowsWidth?: number;
+    treeData?: boolean;
+    getDataPath?: (data: any) => string[];
+    groupDefaultExpanded?: number;
     children?: ReactChild; // grid tool bar
 }
 
 interface GridConfig {}
 
-export interface BaseGridRef {
-    reload: () => void;
-}
+export interface BaseGridRef extends AgGridReact {}
 
 const BaseGrid = React.forwardRef<BaseGridRef, BaseGridProps>((props, ref) => {
-    const gridRef = useRef<AgGridReact>(null);
-    useImperativeHandle(ref, () => ({
-        reload: reload,
-    }));
-
-    const { numberRows = true, actionRows = true } = props;
-
-    const reload = () => {
-        //do some thing
-    };
+    const { numberRows = true, actionRows = true, actionRowsList } = props;
 
     const customColDefs = (
         numberRows
@@ -72,11 +72,51 @@ const BaseGrid = React.forwardRef<BaseGridRef, BaseGridProps>((props, ref) => {
             cellStyle: {
                 textAlign: 'center',
             },
-            cellRenderer: () => {
+            cellRenderer: (params: any) => {
+                const data = _.get(params, 'data');
                 return (
                     <div className="w-full h-full flex items-center justify-center">
-                        <ButtonBase startIcon={faEdit} variant={'success'} />
-                        <ButtonBase startIcon={faTrash} variant={'danger'} />
+                        {actionRowsList?.hasDetailBtn && (
+                            <ButtonBase
+                                startIcon={faFile}
+                                variant={'primary'}
+                                onClick={() => {
+                                    actionRowsList.onClickDetailBtn?.(data);
+                                }}
+                                tooltip="Chi tiết"
+                            />
+                        )}
+                        {actionRowsList?.hasCreateChildBtn && (
+                            <ButtonBase
+                                startIcon={faPlus}
+                                variant={'primary'}
+                                onClick={() => {
+                                    actionRowsList.onClickCreateChildBtn?.(data);
+                                }}
+                                tooltip="Thêm dữ liệu con"
+                            />
+                        )}
+                        {actionRowsList?.hasEditBtn && (
+                            <ButtonBase
+                                startIcon={faEdit}
+                                variant={'success'}
+                                onClick={() => {
+                                    actionRowsList.onClickEditBtn?.(data);
+                                }}
+                                tooltip="Cập nhật"
+                            />
+                        )}
+                        {actionRowsList?.hasDeleteBtn && (
+                            <ButtonBase
+                                startIcon={faTrash}
+                                variant={'danger'}
+                                onClick={() => {
+                                    // TODO: confirm here
+                                    actionRowsList.onClickDeleteBtn?.(data);
+                                }}
+                                tooltip="Xóa"
+                            />
+                        )}
                     </div>
                 );
             },
@@ -86,28 +126,35 @@ const BaseGrid = React.forwardRef<BaseGridRef, BaseGridProps>((props, ref) => {
         <div className="w-full h-full">
             <div className="h-[6%]">{props.children}</div>
             <div className="w-full h-[94%] ag-theme-alpine grid base-grid">
-                <AgGridReact
-                    ref={gridRef}
-                    rowData={props.data}
-                    columnDefs={customColDefs}
-                    defaultColDef={{
-                        resizable: true,
-                        suppressSizeToFit: true,
-                        floatingFilter: false,
-                        suppressAutoSize: true,
-                        ...props.defaultColDef,
-                    }}
-                    suppressAutoSize
-                    pagination
-                    loadingOverlayComponent={<Loading />}
-                    onGridReady={() => {
-                        console.log(123);
-                        setTimeout(function () {
-                            gridRef.current?.api.sizeColumnsToFit();
-                        }, 200);
-                    }}
-                    {...props.gridConfig}
-                />
+                {props.data && (
+                    <AgGridReact
+                        ref={ref}
+                        rowData={props.data}
+                        columnDefs={customColDefs}
+                        defaultColDef={{
+                            resizable: true,
+                            suppressSizeToFit: true,
+                            floatingFilter: false,
+                            suppressAutoSize: true,
+                            ...props.defaultColDef,
+                        }}
+                        suppressAutoSize
+                        pagination
+                        suppressLoadingOverlay
+                        loadingOverlayComponent={<Loading />}
+                        overlayLoadingTemplate={'this is loading'}
+                        // onGridReady={() => {
+                        //     // console.log(123);
+                        //     setTimeout(function () {
+                        //         gridRef.current?.api.sizeColumnsToFit();
+                        //     }, 200);
+                        // }}
+                        treeData={props.treeData}
+                        animateRows
+                        groupDefaultExpanded={props.groupDefaultExpanded}
+                        {...props.gridConfig}
+                    />
+                )}
             </div>
         </div>
     );

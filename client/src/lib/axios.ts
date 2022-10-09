@@ -91,7 +91,7 @@ export type PaginatedList<T = any> = {
     limit: number;
     totalPages: number;
     currentPage: number;
-    items: T;
+    items: T[];
 };
 
 export type ResultResponse<T = any> = Promise<AxiosResponse<ApiResponse<T>>>;

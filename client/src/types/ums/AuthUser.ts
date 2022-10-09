@@ -13,8 +13,8 @@ export interface AppUser {
     orgId?: string;
 }
 
-export interface LoginParams {
-    username: string;
+export interface LoginParam {
+    userName: string;
     password: string;
     rememberMe: boolean;
 }

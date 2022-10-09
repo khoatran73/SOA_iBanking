@@ -9,6 +9,7 @@ export interface Menu {
     parentId?: Identifier;
     background?: string;
     path?: string;
+    level?: number;
     permissions?: string[];
     isDisplay?: boolean;
     displayIndex?: number | null;
@@ -17,11 +18,9 @@ export interface Menu {
 
 export interface MenuLayout {
     name: string;
-    active: boolean;
     route: string;
     background: string;
     level: number;
-    badgeNumber?: number;
     icon: IconName;
     key: string;
     parentKey?: string;

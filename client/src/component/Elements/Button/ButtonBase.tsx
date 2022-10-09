@@ -55,13 +55,7 @@ export const ButtonBase = React.forwardRef<HTMLButtonElement, ButtonProps>(
             </button>
         );
 
-        if (props.tooltip)
-            return (
-                <Tooltip title={props.tooltip}>
-                    {element}
-                    <BaseIcon icon={startIcon || '0'} />
-                </Tooltip>
-            );
+        if (props.tooltip) return <Tooltip title={props.tooltip}>{element}</Tooltip>;
 
         return element;
     },

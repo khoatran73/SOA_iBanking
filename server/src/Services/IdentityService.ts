@@ -17,7 +17,7 @@ export const checkLogin = (req: Request, res: Response) => {
             phoneNumber: '0909090',
         },
     };
-    return res.json(ResponseFail());
+    return res.json(ResponseOk(result));
 };
 
 export const addUser = async (req: Request<any, any, NewUser>, res: Response) => {

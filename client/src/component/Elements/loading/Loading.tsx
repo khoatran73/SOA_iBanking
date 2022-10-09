@@ -1,16 +1,27 @@
-import ReactLoading from 'react-loading';
 import React from 'react';
+import { ReactComponent as SpiralLoading } from '~/assets/layout/spiral.svg';
 
-interface ILoading {
+type LoadingProps = {
     text?: string;
-}
+};
 
-const Loading: React.FC<ILoading> = (props: ILoading): JSX.Element => {
-    const { text } = props;
+const Loading: React.FC<LoadingProps> = props => {
     return (
-        <div className="full-screen d-flex align-items-center justify-content-center flex-column">
-            <ReactLoading type="cylon" color="#0088fe" height={50} width={50} />
-            <p>{text}</p>
+        <div
+            className="loading"
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                zIndex: 999,
+            }}
+        >
+            <SpiralLoading />
+            <span>{props.text}</span>
         </div>
     );
 };

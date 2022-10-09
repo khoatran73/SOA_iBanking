@@ -3,7 +3,7 @@ import axios from 'axios';
 import { AppThunk } from '~/AppStore';
 import { API_CHECK_LOGIN, API_LOGIN, API_LOGOUT } from '~/configs';
 import { requestApi } from '~/lib/axios';
-import { AuthUser, LoginParams } from '~/types/ums/AuthUser';
+import { AuthUser, LoginParam } from '~/types/ums/AuthUser';
 import NotifyUtil from '~/util/NotifyUtil';
 
 interface AuthState {
@@ -63,7 +63,7 @@ export const fetchAuthDataAsync = (): AppThunk => async dispatch => {
 };
 
 export const loginAsync =
-    (params: LoginParams, loginSuccessFullCallback: () => void): AppThunk =>
+    (params: LoginParam, loginSuccessFullCallback: () => void): AppThunk =>
     async dispatch => {
         dispatch(setLoading(true));
         const response = await requestApi<AuthUser>('post', API_LOGIN, params);

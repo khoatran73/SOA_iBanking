@@ -7,17 +7,17 @@ export type PaginatedList<T = any> = {
     items: Array<T>;
 };
 
-export const PaginatedListConstructor = <T = any>(
-    items: Array<T>,
-    totalCount: number,
-    offset: number,
-    limit: number,
-): PaginatedList<T> => {
+export interface PaginatedListQuery {
+    offset: number;
+    limit: number;
+}
+
+export const PaginatedListConstructor = <T = any>(items: Array<T>, offset: number, limit: number): PaginatedList<T> => {
     return {
         currentPage: Math.floor(Math.ceil(offset / limit)),
-        totalCount: Math.floor(Math.ceil(totalCount / limit)),
+        totalCount: items.length,
         totalPages: 1,
-        items: items,
+        items: items.slice(offset, limit),
         limit: limit,
         offset: offset,
     };

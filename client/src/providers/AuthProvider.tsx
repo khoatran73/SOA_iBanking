@@ -22,11 +22,7 @@ export const AuthProvider = ({ children }: Props) => {
 
     if (checkLoginLoading) return <Loading />;
     if (isAuthenticated === false) {
-        return (
-            <div style={{ position: 'relative', width: '100%' }}>
-                <LoginView />
-            </div>
-        );
+        return <LoginView />;
     }
 
     return <>{children}</>;

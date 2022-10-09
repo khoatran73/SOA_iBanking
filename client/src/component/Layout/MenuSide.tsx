@@ -55,14 +55,10 @@ const MenuSide: React.FC<MenuProps> = ({ menuList, collapsed }) => {
 
     const renderMenu = (menus: MenuLayout[], start: number) => {
         return menus.map((menu, index) => {
-            if (!menu.active || !menu.isDisplay) return <></>;
+            if (!menu.isDisplay) return <></>;
             const { icon, name, route, background } = menu;
 
-            if (
-                (menu.children && menu.children.length === 0) ||
-                menu.isLeaf ||
-                menu.children?.every(x => x.isDisplay === false)
-            ) {
+            if ((menu.children && menu.children.length === 0) || menu.children?.every(x => x.isDisplay === false)) {
                 return (
                     <Item
                         key={route}

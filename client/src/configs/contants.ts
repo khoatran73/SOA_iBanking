@@ -1,7 +1,3 @@
-import { Gutter } from 'antd/lib/grid/row';
-
-export const DEFAULT_GUTTER_ROW_FORM = 32 as Gutter;
-
 //action row
 export const CREATE_BUTTON_TOOLTIP = 'Tạo mới';
 export const EDIT_BUTTON_TOOLTIP = 'Sửa';
@@ -24,14 +20,6 @@ export default class NotificationConstant {
     static SEND_MAIL_SUCCESS = 'Gửi mail thành công!';
     static SEND_MAIL_FAIL = 'Gửi mail thất bại!';
     static ERROR_MESSAGE_UTIL = 'Dữ liệu không hợp lệ';
+
+    static NOT_EMPTY = 'Không được để trống!';
 }
-
-export const FORM_CONSTANT = {
-    FORM_ROW_GUTTER: [20, 0] as Gutter,
-    FULL_ROW_SPAN: 24,
-    ROW_SPAN: 12,
-
-    ROW_SPAN_DETAIL_FORM: 24,
-    ROW_SPAN_DUAL_GRID: 11,
-    ROW_SPAN_DUAL_GRID_BUTTON: 2,
-};
