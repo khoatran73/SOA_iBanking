@@ -1,8 +1,8 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import { RouteProps } from 'react-router';
+import { RouterProps } from 'react-router';
 
-export interface WrapperRouteProps extends RouteProps {
+export interface WrapperRouteProps extends RouterProps {
     /** document title locale id */
     titleId: string;
     /** authorization？ */

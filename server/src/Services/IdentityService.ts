@@ -3,7 +3,8 @@ import _ from 'lodash';
 import { ResponseFail, ResponseOk } from '../common/ApiResponse';
 import { AuthUser, NewUser, LoginParams } from '../types/Identity';
 import User from './../Models/User';
-
+import jwt from 'jsonwebtoken';
+const jwtSecret: string = process.env.JWT_PRIVATE_KEY || 'secret';
 export const checkLogin = (req: Request, res: Response) => {
     const result: AuthUser = {
         rights: [''],
@@ -16,6 +17,7 @@ export const checkLogin = (req: Request, res: Response) => {
             orgId: 'this is org id',
             phoneNumber: '0909090',
         },
+        token: 'this is token',
     };
     return res.json(ResponseOk(result));
 };
@@ -53,7 +55,7 @@ export const login = async (req: Request<any, any, LoginParams>, res: Response) 
     }
 
     // TODO: create session here
-
+    const token = jwt.sign({ username: user.userName, isAdmin: user.isAdmin }, jwtSecret, { expiresIn: '1h' });
     const result: AuthUser = {
         rights: [''],
         user: {
@@ -64,7 +66,9 @@ export const login = async (req: Request<any, any, LoginParams>, res: Response) 
             userName: user.userName,
             phoneNumber: user.phoneNumber,
         },
+        token,
     };
+    res.setHeader('Authorization', token);
 
     return res.json(ResponseOk(result));
 };
