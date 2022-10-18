@@ -1,6 +1,9 @@
 import React from 'react';
 import { BaseGridRef } from '~/component/Grid/BaseGrid';
 import { PaginatedList, requestApi } from '~/lib/axios';
+import { useSelector } from 'react-redux';
+import { RootState } from '~/AppStore';
+import { Authorization } from '~/types/shared';
 
 export interface BaseGridResponse<TData> {
     loading: boolean;
@@ -29,6 +32,7 @@ const countOffset = (pageNumber: number, limit: number) => {
 };
 
 export function useBaseGrid<TData>({ pageSize = 25, ...props }: Props): BaseGridResponse<TData> | null {
+    const { authUser } = useSelector((state: RootState) => state.authData);
     const [state, setState] = React.useState<State<TData>>({
         loading: true,
         data: undefined,
@@ -45,7 +49,12 @@ export function useBaseGrid<TData>({ pageSize = 25, ...props }: Props): BaseGrid
             limit: limit,
         };
 
-        const response = await requestApi<PaginatedList<TData>>('get', props.url, {}, { params: query });
+        const response = await requestApi<PaginatedList<TData>>(
+            'get',
+            props.url,
+            {},
+            { params: query, headers: { [Authorization]: authUser?.token ?? '' } },
+        );
 
         if (response.data?.success) {
             setState({

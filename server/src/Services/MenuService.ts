@@ -4,7 +4,6 @@ import { ResponseFail, ResponseOk } from '../common/ApiResponse';
 import { PaginatedListConstructor, PaginatedListQuery } from '../common/PaginatedList';
 import Menu from '../Models/Menu';
 import { IMenu, MenuLayout } from '../types/Menu';
-import { Identifier } from '../types/shared';
 
 export const getMenuIndex = async (req: Request<any, any, any, PaginatedListQuery>, res: Response) => {
     const menus = await Menu.find();
@@ -59,7 +58,7 @@ export const addMenu = async (req: Request<any, any, IMenu>, res: Response) => {
     }
 };
 
-export const updateMenu = async (req: Request<{ id: Identifier }, any, IMenu>, res: Response) => {
+export const updateMenu = async (req: Request<{ id: string }, any, IMenu>, res: Response) => {
     const id = req.params.id;
 
     const menu = await Menu.findOne({ id: id });

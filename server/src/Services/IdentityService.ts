@@ -5,6 +5,7 @@ import { AuthUser, NewUser, LoginParams } from '../types/Identity';
 import User from './../Models/User';
 import jwt from 'jsonwebtoken';
 const jwtSecret: string = process.env.JWT_PRIVATE_KEY || 'secret';
+
 export const checkLogin = (req: Request, res: Response) => {
     const result: AuthUser = {
         rights: [''],
@@ -19,7 +20,8 @@ export const checkLogin = (req: Request, res: Response) => {
         },
         token: 'this is token',
     };
-    return res.json(ResponseOk(result));
+    // return res.json(ResponseOk(result));
+    return res.json(ResponseFail());
 };
 
 export const addUser = async (req: Request<any, any, NewUser>, res: Response) => {
@@ -56,6 +58,7 @@ export const login = async (req: Request<any, any, LoginParams>, res: Response) 
 
     // TODO: create session here
     const token = jwt.sign({ username: user.userName, isAdmin: user.isAdmin }, jwtSecret, { expiresIn: '1h' });
+    // save user info to session -> 1 hour -> 2
     const result: AuthUser = {
         rights: [''],
         user: {
@@ -68,7 +71,7 @@ export const login = async (req: Request<any, any, LoginParams>, res: Response) 
         },
         token,
     };
-    res.setHeader('Authorization', token);
+    res.setHeader('authorization', token);
 
     return res.json(ResponseOk(result));
 };

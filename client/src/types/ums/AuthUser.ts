@@ -1,6 +1,7 @@
 export interface AuthUser {
     rights: string[];
     user: AppUser;
+    token: string;
 }
 
 export interface AppUser {
