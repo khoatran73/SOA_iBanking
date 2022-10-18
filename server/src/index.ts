@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 const port: number = Number(process.env.PORT) || 5000;
-const dbUrl: string | undefined = process.env.MONGO_URL_ATLAS || process.env.MONGO_URL_LOCAL;
+const dbUrl: string | undefined = process.env.MONGO_URL_ATLAT;
 const app: Application = express();
 const server = http.createServer(app);
 connectDatabase(dbUrl);

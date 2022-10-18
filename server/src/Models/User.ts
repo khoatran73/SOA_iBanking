@@ -2,8 +2,8 @@ import { Schema, Model, model } from 'mongoose';
 import crypto from 'crypto';
 import { Identifier } from '../types/shared';
 
-interface IUser {
-    id: Identifier;
+export interface IUser {
+    id?: Identifier;
     userName: string;
     passwordHash: string;
     salt: string;
