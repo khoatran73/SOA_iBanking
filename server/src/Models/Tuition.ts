@@ -1,4 +1,4 @@
-import { Schema, Model, model, SchemaDefinitionProperty } from 'mongoose';
+import { Schema, Model, model } from 'mongoose';
 import crypto from 'crypto';
 import { Identifier } from '../types/shared';
 import { IUser } from './User';

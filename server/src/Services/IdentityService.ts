@@ -3,24 +3,22 @@ import _ from 'lodash';
 import { ResponseFail, ResponseOk } from '../common/ApiResponse';
 import { AuthUser, NewUser, LoginParams } from '../types/Identity';
 import User from './../Models/User';
-import jwt from 'jsonwebtoken';
-const jwtSecret: string = process.env.JWT_PRIVATE_KEY || 'secret';
+
+declare module 'express-session' {
+    interface SessionData {
+        user: any;
+    }
+}
 
 export const checkLogin = (req: Request, res: Response) => {
-    const result: AuthUser = {
-        rights: [''],
-        user: {
-            email: 'khoa@gmail.com',
-            fullName: 'khoa tran anh',
-            id: 'this is user id',
-            isSupper: true,
-            userName: 'khoa.tran',
-            orgId: 'this is org id',
-            phoneNumber: '0909090',
-        },
-        token: 'this is token',
-    };
-    // return res.json(ResponseOk(result));
+    const user = req.session.user;
+    if (user){
+        const result: AuthUser = {
+            rights: [''],
+            user
+        };
+        return res.json(ResponseOk(result));
+    }
     return res.json(ResponseFail());
 };
 
@@ -56,9 +54,6 @@ export const login = async (req: Request<any, any, LoginParams>, res: Response) 
         return res.json(ResponseFail('Tài khoản hoặc mật khẩu không đúng!'));
     }
 
-    // TODO: create session here
-    const token = jwt.sign({ username: user.userName, isAdmin: user.isAdmin }, jwtSecret, { expiresIn: '1h' });
-    // save user info to session -> 1 hour -> 2
     const result: AuthUser = {
         rights: [''],
         user: {
@@ -69,9 +64,8 @@ export const login = async (req: Request<any, any, LoginParams>, res: Response) 
             userName: user.userName,
             phoneNumber: user.phoneNumber,
         },
-        token,
     };
-    res.setHeader('authorization', token);
+    req.session.user = result.user;
 
     return res.json(ResponseOk(result));
 };
