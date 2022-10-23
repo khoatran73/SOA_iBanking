@@ -3,6 +3,8 @@ import _ from 'lodash';
 import MockAdapter from 'axios-mock-adapter';
 import NotifyUtil from '../util/NotifyUtil';
 import { useNotificationStore } from '../store/notifications';
+import { Identifier } from '~/types/shared';
+import NotificationConstant from '~/configs/contants';
 
 // function authRequestInterceptor(config: AxiosRequestConfig) {
 //     const token = storage.getToken();
@@ -186,35 +188,6 @@ export const requestApi = <T = any>(
     }
 };
 
-export const createFormMultipartForNet = (formValues: Record<string, any>) => {
-    const formData = new FormData();
-    const bindForm = (form: FormData, fieldValue: string, value: any) => {
-        if (value instanceof File) {
-            form.append(fieldValue, value);
-        } else if (value instanceof Object) {
-            form.append(fieldValue, JSON.stringify(value));
-        } else {
-            form.append(fieldValue, value);
-        }
-    };
-    Object.keys(formValues).forEach((key: string, index) => {
-        const fieldValue = formValues[key];
-        if (fieldValue == null) return;
-        if (fieldValue instanceof Array) {
-            if (fieldValue[0] instanceof File) {
-                fieldValue.forEach(value => {
-                    bindForm(formData, key, value);
-                });
-            } else {
-                bindForm(formData, key, JSON.stringify(fieldValue));
-            }
-        } else {
-            bindForm(formData, key, fieldValue);
-        }
-    });
-    return formData;
-};
-
 export const downloadFileAsGetRequest = (
     url: string,
     {
@@ -314,4 +287,13 @@ export const queryStringSerialize = (obj: any = {}): string => {
             str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
         }
     return str.join('&');
+};
+
+export const baseDeleteApi = async (url: string, id: Identifier) => {
+    const response = await requestApi('delete', `${url}/${id}`);
+    if (response.data?.success) {
+        NotifyUtil.success(NotificationConstant.TITLE, NotificationConstant.DESCRIPTION_DELETE_SUCCESS);
+    } else {
+        NotifyUtil.error(NotificationConstant.TITLE, response.data?.message ?? NotificationConstant.DESCRIPTION_DELETE_FAIL);
+    }
 };

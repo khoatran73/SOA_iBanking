@@ -6,9 +6,14 @@ import Menu from '../Models/Menu';
 import { IMenu, MenuLayout } from '../types/Menu';
 
 export const getMenuIndex = async (req: Request<any, any, any, PaginatedListQuery>, res: Response) => {
-    const menus = await Menu.find();
+    const menus = await Menu.find().exec();
 
-    const result = PaginatedListConstructor<IMenu>(menus, req.query.offset, req.query.limit);
+    const menuResults = menus.map(menu => {
+        const doc = _.get({ ...menu }, '_doc');
+        return { ...doc, group: buildTreeGroup(menu.path, menus) } as IMenu;
+    });
+
+    const result = PaginatedListConstructor<IMenu>(menuResults, req.query.offset, req.query.limit);
 
     return res.json(ResponseOk<IMenu[]>(result));
 };
@@ -77,18 +82,22 @@ export const updateMenu = async (req: Request<{ id: string }, any, IMenu>, res: 
     return res.json(ResponseOk());
 };
 
-export const deleteMenu = async (req: Request<any, any, IMenu>, res: Response) => {
-    // try {
-    //     const isExistMenu = Boolean(await Menu.findOne({ route: req.body.route }));
-    //     if (isExistMenu) {
-    //         return res.json(ResponseFail('Route đã tồn tại!'));
-    //     }
-    //     const user = new Menu({
-    //         ...req.body,
-    //     });
-    //     user.save();
-    //     return res.json(ResponseOk());
-    // } catch (err) {
-    //     return res.json(ResponseFail(_.get(err, 'message')));
-    // }
+export const deleteMenu = async (req: Request<{ id: string }, any, IMenu>, res: Response) => {
+    const id = req.params.id;
+    return Menu.deleteOne({ id: id })
+        .then(() => res.json(ResponseOk()))
+        .catch(err => res.json(ResponseFail(err?.message)));
 };
+
+// #region private func
+
+const buildTreeGroup = (path: string, menus: IMenu[]): string[] => {
+    const arrPath = path?.split('.') as string[];
+    const groupResponse = [] as string[];
+
+    arrPath.forEach(id => groupResponse.push(menus.find(x => x.id === id)?.name ?? ''));
+
+    return groupResponse;
+};
+
+// #endregion

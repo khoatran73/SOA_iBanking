@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import _ from 'lodash';
 import { ResponseFail, ResponseOk } from '../common/ApiResponse';
-import { AuthUser, NewUser, LoginParams } from '../types/Identity';
+import { AuthUser, NewUser, LoginParams, AppUser } from '../types/Identity';
 import User from './../Models/User';
 
 declare module 'express-session' {
@@ -10,12 +10,13 @@ declare module 'express-session' {
     }
 }
 
-export const checkLogin = (req: Request, res: Response) => {
-    const user = req.session.user;
-    if (user){
+export const checkLogin = async (req: Request, res: Response) => {
+    // const user = req.session.user;
+    const user = (await User.findOne({ userName: 'admin' })) as AppUser;
+    if (user) {
         const result: AuthUser = {
             rights: [''],
-            user
+            user,
         };
         return res.json(ResponseOk(result));
     }

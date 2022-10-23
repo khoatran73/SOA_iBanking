@@ -1,13 +1,15 @@
+import { ColDef, GetDataPath } from '@ag-grid-community/core';
 import _ from 'lodash';
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import Loading from '~/component/Elements/loading/Loading';
 import BaseGrid, { BaseGridRef } from '~/component/Grid/BaseGrid';
 import { GridToolbar } from '~/component/Grid/Components/GridToolbar';
 import { AppContainer } from '~/component/Layout/AppContainer';
 import ModalBase, { ModalRef } from '~/component/Modal/ModalBase';
 import { useBaseGrid } from '~/hook/useBaseGrid';
+import { baseDeleteApi } from '~/lib/axios';
 import { Menu } from '~/types/layout/Menu';
-import { MENU_INDEX_API } from './api/api';
+import { MENU_DELETE_API, MENU_INDEX_API } from './api/api';
 import MenuForm from './components/MenuForm';
 import { MenuColDefs } from './configs/MenuColDefs';
 
@@ -49,7 +51,8 @@ const MenuListView: React.FC = () => {
     };
 
     const onDelete = (data: Menu) => {
-        console.log('🚀 ~ file: MenuListView.tsx ~ line 30 ~ onDelete ~ data', data);
+        baseDeleteApi(MENU_DELETE_API, data.id);
+        gridController?.reloadData();
     };
 
     const onCreateChild = (data: Menu) => {
@@ -67,6 +70,22 @@ const MenuListView: React.FC = () => {
         );
     };
 
+    const autoGroupColumnDef = useMemo<ColDef>(() => {
+        return {
+            headerName: 'Tên',
+            minWidth: 300,
+            cellRendererParams: {
+                suppressCount: true,
+            },
+        };
+    }, []);
+
+    const getDataPath = useMemo<GetDataPath>(() => {
+        return (data: Menu) => {
+            return data.group ?? [];
+        };
+    }, []);
+
     if (gridController?.loading) return <Loading />;
     return (
         <AppContainer>
@@ -74,7 +93,8 @@ const MenuListView: React.FC = () => {
                 columnDefs={MenuColDefs}
                 data={gridController?.data}
                 ref={gridRef}
-                numberRows
+                numberRows={false}
+                pagination={false}
                 actionRowsList={{
                     hasEditBtn: true,
                     hasDeleteBtn: true,
@@ -84,6 +104,9 @@ const MenuListView: React.FC = () => {
                     onClickDeleteBtn: onDelete,
                 }}
                 actionRowsWidth={120}
+                autoGroupColumnDef={autoGroupColumnDef}
+                getDataPath={getDataPath}
+                groupDefaultExpanded={-1}
             >
                 <GridToolbar
                     hasCreateButton

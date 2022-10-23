@@ -8,6 +8,6 @@ router.get('/layout', getMenuLayout);
 router.get('/index', getMenuIndex);
 router.post('/create', addMenu);
 router.put('/update/:id', updateMenu);
-router.delete('/delete', deleteMenu);
+router.delete('/delete/:id', deleteMenu);
 
 export default router;

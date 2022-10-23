@@ -2,16 +2,17 @@ import { Identifier } from './shared';
 
 export interface IMenu {
     id: Identifier;
-    name: string | string[];
+    name: string;
     route: string;
     icon: string;
     parentId?: Identifier;
     background?: string;
-    path?: string;
+    path: string;
     level?: number;
     permissions?: string[];
     isDisplay?: boolean;
     displayIndex?: number | null;
+    group?: string[];
 }
 
 export interface MenuLayout {

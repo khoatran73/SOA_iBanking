@@ -2,12 +2,12 @@ import { BaseGridColDef } from '~/component/Grid/BaseGrid';
 import { Menu } from '~/types/layout/Menu';
 
 export const MenuColDefs: BaseGridColDef[] = [
-    {
-        headerName: 'Name',
-        field: nameof.full<Menu>(x => x.name),
-        flex: 1,
-        rowDrag: true,
-    },
+    // {
+    //     headerName: 'Name',
+    //     field: nameof.full<Menu>(x => x.name),
+    //     flex: 1,
+    //     rowDrag: true,
+    // },
     {
         headerName: 'Route',
         field: nameof.full<Menu>(x => x.route),

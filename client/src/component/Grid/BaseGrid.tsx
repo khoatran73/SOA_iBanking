@@ -1,15 +1,20 @@
-import { faEdit, faFile, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { ColDef, ColGroupDef } from 'ag-grid-community';
+import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
+import { ColDef, ColGroupDef, GetDataPath, ModuleRegistry } from '@ag-grid-community/core';
+import { AgGridReact } from '@ag-grid-community/react';
+import { RowGroupingModule } from '@ag-grid-enterprise/row-grouping';
+import { faEdit, faFile, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import { AgGridReact } from 'ag-grid-react';
+import { Popconfirm } from 'antd';
 import _ from 'lodash';
-import React, { ReactChild, useImperativeHandle, useRef } from 'react';
+import React, { ReactChild } from 'react';
 import { ButtonBase } from '../Elements/Button/ButtonBase';
 import Loading from '../Elements/loading/Loading';
 import './styles/BaseGrid.scss';
 
 export interface BaseGridColDef extends ColDef, Partial<ColGroupDef> {}
+
+ModuleRegistry.registerModules([ClientSideRowModelModule, RowGroupingModule]);
 
 export interface BaseGridProps {
     columnDefs: BaseGridColDef[];
@@ -30,8 +35,10 @@ export interface BaseGridProps {
     };
     actionRowsWidth?: number;
     treeData?: boolean;
-    getDataPath?: (data: any) => string[];
+    getDataPath?: GetDataPath;
     groupDefaultExpanded?: number;
+    autoGroupColumnDef?: ColDef<any>;
+    pagination?: boolean;
     children?: ReactChild; // grid tool bar
 }
 
@@ -40,7 +47,7 @@ interface GridConfig {}
 export interface BaseGridRef extends AgGridReact {}
 
 const BaseGrid = React.forwardRef<BaseGridRef, BaseGridProps>((props, ref) => {
-    const { numberRows = true, actionRows = true, actionRowsList } = props;
+    const { numberRows = true, actionRows = true, actionRowsList, pagination = true } = props;
 
     const customColDefs = (
         numberRows
@@ -107,15 +114,15 @@ const BaseGrid = React.forwardRef<BaseGridRef, BaseGridProps>((props, ref) => {
                             />
                         )}
                         {actionRowsList?.hasDeleteBtn && (
-                            <ButtonBase
-                                startIcon={faTrash}
-                                variant={'danger'}
-                                onClick={() => {
-                                    // TODO: confirm here
-                                    actionRowsList.onClickDeleteBtn?.(data);
-                                }}
-                                tooltip="Xóa"
-                            />
+                            <Popconfirm
+                                placement="topRight"
+                                title={'Bạn có chắc muốn xóa ?'}
+                                onConfirm={e => actionRowsList.onClickDeleteBtn?.(data)}
+                                okText="Đồng ý"
+                                cancelText="Đóng"
+                            >
+                                <ButtonBase startIcon={faTrash} variant={'danger'} />
+                            </Popconfirm>
                         )}
                     </div>
                 );
@@ -130,6 +137,7 @@ const BaseGrid = React.forwardRef<BaseGridRef, BaseGridProps>((props, ref) => {
                     <AgGridReact
                         ref={ref}
                         rowData={props.data}
+                        autoGroupColumnDef={props.autoGroupColumnDef}
                         columnDefs={customColDefs}
                         defaultColDef={{
                             resizable: true,
@@ -139,7 +147,7 @@ const BaseGrid = React.forwardRef<BaseGridRef, BaseGridProps>((props, ref) => {
                             ...props.defaultColDef,
                         }}
                         suppressAutoSize
-                        pagination
+                        pagination={pagination}
                         suppressLoadingOverlay
                         loadingOverlayComponent={<Loading />}
                         overlayLoadingTemplate={'this is loading'}
@@ -149,8 +157,9 @@ const BaseGrid = React.forwardRef<BaseGridRef, BaseGridProps>((props, ref) => {
                         //         gridRef.current?.api.sizeColumnsToFit();
                         //     }, 200);
                         // }}
-                        treeData={props.treeData}
+                        treeData={true}
                         animateRows
+                        getDataPath={props.getDataPath}
                         groupDefaultExpanded={props.groupDefaultExpanded}
                         {...props.gridConfig}
                     />
