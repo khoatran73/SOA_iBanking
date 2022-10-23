@@ -1,10 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
-import { AppThunk, RootState } from '~/AppStore';
+import { AppThunk } from '~/AppStore';
 import { API_CHECK_LOGIN, API_LOGIN, API_LOGOUT } from '~/configs';
+import NotificationConstant from '~/configs/contants';
 import { requestApi } from '~/lib/axios';
-import { Authorization } from '~/types/shared';
 import { AuthUser, LoginParam } from '~/types/ums/AuthUser';
 import NotifyUtil from '~/util/NotifyUtil';
 
@@ -90,8 +89,9 @@ export const logoutAsync =
     (loginSuccessFullCallback: () => void): AppThunk =>
     async dispatch => {
         dispatch(setLoading(true));
-        const response = await requestApi<AuthUser>('post', API_LOGOUT);
+        const response = await requestApi<AuthUser>('get', API_LOGOUT);
         if (response.data.success) {
+            NotifyUtil.success(NotificationConstant.TITLE, 'Đăng xuất thành công!');
             dispatch(setLogout());
             loginSuccessFullCallback();
         }

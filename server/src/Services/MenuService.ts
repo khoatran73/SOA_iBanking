@@ -32,7 +32,7 @@ export const getMenuLayout = async (req: Request, res: Response) => {
             isDisplay: menu.isDisplay,
             level: menu.level,
             path: menu.path,
-            breadcrumbs: menu.path?.split('.').map(id => menus.find(m => m.id === id)?.name),
+            breadcrumbs: buildTreeGroup(menu.path, menus),
         } as MenuLayout;
     });
 

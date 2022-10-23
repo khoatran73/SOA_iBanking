@@ -1,0 +1,56 @@
+:root {
+    --main-disable-color: #007bff;
+    --main-icon-font-weight: 400;
+    --main-label-font-size: 12px;
+    --main-label-font-color: #007bff;
+    --main-label-font-weight: 700;
+    --main-input-font-size: 12px;
+    --main-input-font-color: #333;
+    --main-input-font-weight: 400;
+    --main-input-line-height: 27px;
+    --main-input-border-radius: 3px;
+    --main-input-border-color: #007bff;
+    --main-icon-font-size: 13px;
+    --main-icon-font-color: #198ae3;
+    --main-icon-line-height: 28px;
+    --main-font-size: 12px;
+    --main-color: #198ae3;
+    --main-border-color: #dddddd;
+    --main-input-border-color-default: #dddddd;
+    --main-error-color: #ff2626;
+
+    --menu-side-bg-selected: #bee6f7;
+
+    --app-primary-green: #2eb85c;
+    --app-primary-red: rgb(225, 69, 47);
+    --app-primary-bule: 500 #03a9f4;
+    --app-primary-amber: #ffb300;
+    --app-primary-gray: #78909c;
+
+    --gray-dark: #0f1531;
+    --blue: #085bb1;
+    --indigo: #6610f2;
+    --purple: #6a008a;
+    --pink: #e91e63;
+    --red: #f33d3d;
+    --orange: #f2a654;
+    --yellow: #f6e84e;
+    --green: #46c35f;
+    --teal: #58d887;
+    --cyan: #57c7d4;
+    --white: #ffffff;
+    --gray: #434a54;
+    --gray-light: #aab2bd;
+    --gray-lighter: #e8eff4;
+    --gray-lightest: #e6e9ed;
+    --black: #000000;
+    --primary: #3f50f6;
+    --secondary: #d8d8d8;
+    --success: #00cccd;
+    --info: #198ae3;
+    --warning: #ffab2d;
+    --danger: #ff3ca6;
+    --light: #f8f9fa;
+    --dark: #3e4b5b;
+    --pur: #6a5495;
+}

@@ -13,7 +13,7 @@ import NotifyUtil from '~/util/NotifyUtil';
 import { MENU_CREATE_API, MENU_UPDATE_API } from '../api/api';
 
 interface Props {
-    initialValues?: Menu;
+    initialValues?: Partial<Menu>;
     parentId?: Identifier;
     onClose?: () => void;
     onSubmitSuccessfully?: () => void;

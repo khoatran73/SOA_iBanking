@@ -9,18 +9,19 @@ import { logoutAsync } from '~/store/authSlice';
 
 type Action = 'userInfo' | 'userSetting' | 'logout' | 'legal';
 
-const Header: React.FC = () => {
+interface Props {
+    toggle: () => void;
+}
+
+const Header: React.FC<Props> = props => {
     const dispatch = useDispatch();
+    const { toggle } = props;
     const { isAuthenticated, authUser } = useAppState(state => state.authData);
 
-    const onActionClick = async (action: Action) => {
+    const onActionClick = (action: Action) => {
         switch (action) {
-            case 'userInfo':
-                return;
-            case 'userSetting':
-                return;
             case 'logout':
-                await dispatch(logoutAsync(() => null));
+                dispatch(logoutAsync(() => null));
                 return;
         }
     };
@@ -42,24 +43,24 @@ const Header: React.FC = () => {
                 <div
                     className="cursor-pointer hover:bg-white hover:bg-opacity-20 relative border border-solid border-white p-3 w-9 h-9 rounded"
                     id="sidebar-trigger"
-                    // onClick={toggle}
+                    onClick={toggle}
                 >
                     <MenuUnfoldOutlined className="absolute top-1.5 left-1.5" style={{ fontSize: '22px' }} />
                 </div>
                 <div className="pl-3 uppercase">IBanking</div>
             </div>
             <div className="flex-1 flex items-center justify-end">
-                {/* <Dropdown overlay={menu}> */}
-                <div className="h-9 cursor-pointer flex items-center mx-1.5 justify-center uppercase rounded text-white px-2 hover:bg-white hover:bg-opacity-20 duration-75">
-                    <Avatar
-                        size={32}
-                        icon={<UserOutlined style={{ color: '#198ae3' }} />}
-                        className="flex items-center justify-center bg-white rounded-full"
-                    />
-                    <span className="mx-2">{authUser?.user.userName}</span>
-                    <CaretDownFilled />
-                </div>
-                {/* </Dropdown> */}
+                <Dropdown overlay={menu}>
+                    <div className="h-9 cursor-pointer flex items-center mx-1.5 justify-center uppercase rounded text-white px-2 hover:bg-white hover:bg-opacity-20 duration-75">
+                        <Avatar
+                            size={32}
+                            icon={<UserOutlined style={{ color: '#198ae3' }} />}
+                            className="flex items-center justify-center bg-white rounded-full"
+                        />
+                        <span className="mx-2">{authUser?.user.userName}</span>
+                        <CaretDownFilled />
+                    </div>
+                </Dropdown>
             </div>
         </div>
     );

@@ -1,9 +1,14 @@
 import React from 'react';
 import { matchRoutes, RouteMatch, RouteObject, useRoutes } from 'react-router-dom';
-import { NotFound } from '~/component/Layout/NotFound';
-import LayoutPage from '~/component/Layout/LayoutPage';
-import { LoginView } from '~/component/Layout/LoginView';
-import MenuListView from '~/page/system/menu/MenuListView';
+
+//layout
+const LayoutPage = React.lazy(() => import('~/component/Layout/LayoutPage'));
+const LoginView = React.lazy(() => import('~/component/Layout/LoginView'));
+const NotFound = React.lazy(() => import('~/component/Layout/NotFound'));
+
+//system
+const MenuListView = React.lazy(() => import('~/page/system/menu/MenuListView'));
+const RoleListView = React.lazy(() => import('~/page/system/role/RoleListView'));
 
 const routeList = [
     {
@@ -17,24 +22,10 @@ const routeList = [
                         path: 'menu',
                         element: <MenuListView />,
                     },
-                    // {
-                    //     path: 'role',
-                    //     children: [
-                    //         {
-                    //             path: '',
-                    //             element: <RoleListView />,
-                    //         },
-                    //         {
-                    //             path: 'add-claim',
-                    //             children: [
-                    //                 {
-                    //                     path: ':id',
-                    //                     element: <RoleAddClaimView />,
-                    //                 },
-                    //             ],
-                    //         },
-                    //     ],
-                    // },
+                    {
+                        path: 'role',
+                        element: <RoleListView />,
+                    },
                 ],
             },
         ],
@@ -43,10 +34,6 @@ const routeList = [
         path: '/login',
         element: <LoginView />,
     },
-    // {
-    //     path: '/admin',
-    //     element: <MainPage />,
-    // },
     {
         path: '/*',
         element: <NotFound />,

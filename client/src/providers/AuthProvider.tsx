@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '~/AppStore';
 import Loading from '~/component/Elements/loading/Loading';
-import { LoginView } from '~/component/Layout/LoginView';
+import LoginView from '~/component/Layout/LoginView';
 import { fetchAuthDataAsync } from '~/store/authSlice';
 
 type Props = {

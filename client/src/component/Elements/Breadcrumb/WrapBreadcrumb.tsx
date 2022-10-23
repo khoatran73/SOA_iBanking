@@ -6,6 +6,7 @@ import { useLocation } from 'react-router';
 import { Link, useNavigate } from 'react-router-dom';
 import { HomeFilled } from '@ant-design/icons';
 import { Tooltip } from 'antd';
+import { BaseIcon } from '~/component/Icon/BaseIcon';
 
 export const WrapBreadcrumb = createTeleporter();
 
@@ -29,51 +30,15 @@ export const Breadcrumb = (props: Props) => {
     return (
         <div className="page-breadcrumb">
             <div className="flex items-center text-sm text-white pr-2.5">
-                {breadcrumbs.length > 1 ? (
-                    <BreadcrumbItem href="/#">
-                        <div className="flex items-center">
-                            <HomeFilled />
-                            <div className="ml-1">Trang chủ</div>
-                        </div>{' '}
-                    </BreadcrumbItem>
-                ) : (
-                    <Link to="/#" className="hover:text-white">
-                        <div className="flex items-center">
-                            <HomeFilled />
-                            <div className="ml-1">Trang chủ</div>
-                        </div>
-                    </Link>
-                )}
-                {breadcrumbs.length > 1 &&
-                    breadcrumbs.map((breadcrumb, index) => {
-                        if (breadcrumb.route) {
-                            if (breadcrumb.route === 'back') {
-                                return (
-                                    <BreadcrumbItem
-                                        key={`breadcrum-${index}`}
-                                        onClick={() => {
-                                            navigate(-1);
-                                        }}
-                                    >
-                                        <span>{breadcrumb.text}</span>
-                                    </BreadcrumbItem>
-                                );
-                            }
+                {breadcrumbs.map((breadcrumb, index) => {
+                    if (breadcrumb.route) {
+                        if (breadcrumb.route === 'back') {
                             return (
                                 <BreadcrumbItem
                                     key={`breadcrum-${index}`}
                                     onClick={() => {
-                                        if (breadcrumb.back) {
-                                            if (get(history, 'action') === 'PUSH') {
-                                                navigate(-1);
-                                            } else {
-                                                navigate(`${breadcrumb.route}`);
-                                            }
-                                        } else {
-                                            navigate(`${breadcrumb.route}`);
-                                        }
+                                        navigate(-1);
                                     }}
-                                    href={`#${breadcrumb.route}`}
                                 >
                                     <span>{breadcrumb.text}</span>
                                 </BreadcrumbItem>
@@ -82,20 +47,40 @@ export const Breadcrumb = (props: Props) => {
                         return (
                             <BreadcrumbItem
                                 key={`breadcrum-${index}`}
-                                lastest={index === breadcrumbs.length - 1}
-                                className={classNames('', { 'breadcrum-lastest': index === breadcrumbs.length - 1 })}
-                                code={breadcrumb.code}
+                                onClick={() => {
+                                    if (breadcrumb.back) {
+                                        if (get(history, 'action') === 'PUSH') {
+                                            navigate(-1);
+                                        } else {
+                                            navigate(`${breadcrumb.route}`);
+                                        }
+                                    } else {
+                                        navigate(`${breadcrumb.route}`);
+                                    }
+                                }}
+                                href={`#${breadcrumb.route}`}
                             >
-                                {breadcrumb.tooltip ? (
-                                    <Tooltip placement="bottomLeft" title={breadcrumb.text}>
-                                        <span className="breadcrumb-text">{breadcrumb.text}</span>
-                                    </Tooltip>
-                                ) : (
-                                    <span className="breadcrumb-text">{breadcrumb.text}</span>
-                                )}
+                                <span>{breadcrumb.text}</span>
                             </BreadcrumbItem>
                         );
-                    })}
+                    }
+                    return (
+                        <BreadcrumbItem
+                            key={`breadcrum-${index}`}
+                            lastest={index === breadcrumbs.length - 1}
+                            className={classNames('', { 'breadcrum-lastest': index === breadcrumbs.length - 1 })}
+                            code={breadcrumb.code}
+                        >
+                            {breadcrumb.tooltip ? (
+                                <Tooltip placement="bottomLeft" title={breadcrumb.text}>
+                                    <span className="breadcrumb-text">{breadcrumb.text}</span>
+                                </Tooltip>
+                            ) : (
+                                <span className="breadcrumb-text">{breadcrumb.text}</span>
+                            )}
+                        </BreadcrumbItem>
+                    );
+                })}
             </div>
         </div>
     );
@@ -120,7 +105,7 @@ export const BreadcrumbItem = (props: React.PropsWithChildren<BreadcrumbItemProp
         >
             <div className="breadcrumb-wrap-text flex items-center">{props.children}</div>
             {props.code && <span style={{ paddingLeft: 5 }}>({props.code})</span>}
-            {!props.lastest && <span style={{ margin: '0px 8px' }}>/</span>}
+            {!props.lastest && <span style={{ margin: '0px 6px' }}>/</span>}
         </div>
     );
 };

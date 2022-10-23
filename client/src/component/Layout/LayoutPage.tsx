@@ -20,14 +20,13 @@ const LayoutPage: React.FC = () => {
 
     useEffect(() => {
         dispatch(fetchAuthLayoutAsync());
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const toggle = () => {
         setCollapsed(state => !state);
     };
 
-    const menuBreadcrumb = menus.find(x => location.pathname.includes(x.route));
+    const menuBreadcrumb = menus.find(x => location.pathname === x.route);
 
     const breadcrumbs =
         menuBreadcrumb?.breadcrumbs?.map<BreadcrumbType>(value => {
@@ -62,7 +61,7 @@ const LayoutPage: React.FC = () => {
                         top: 140,
                     }}
                 />
-                <Header />
+                <Header toggle={toggle} />
                 <div className="w-full mb-1">
                     <WrapBreadcrumb.Target />
                     <WrapBreadcrumb.Source>

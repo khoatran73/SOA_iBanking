@@ -1,17 +1,13 @@
-import { IconPrefix } from '@fortawesome/fontawesome-common-types';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { IconName } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
 import { BaseIcon } from './BaseIcon';
 
 type Props = {
-    icon: IconName;
-    background?: string;
+    icon: IconProp;
     name: string;
 };
 
-export const MenuIcon: React.FC<Props> = ({ background, icon, name }) => {
+export const MenuIcon: React.FC<Props> = ({ icon, name }) => {
     const fnHashCode = (str: string) => {
         let hash = 0;
         if (!str) return str;
@@ -31,13 +27,12 @@ export const MenuIcon: React.FC<Props> = ({ background, icon, name }) => {
 
     return (
         <div
-            className={'text-base'}
+            className={'text-base w-8 h-8 flex items-center justify-center rounded mr-1.5'}
             style={{
                 background: `#${strbg}`,
-                color: '#ccc',
             }}
         >
-            <BaseIcon icon={icon || 'home'} color={'#ccc'} />
+            <BaseIcon icon={icon || 'home'} color={'#fff'} />
         </div>
     );
 };

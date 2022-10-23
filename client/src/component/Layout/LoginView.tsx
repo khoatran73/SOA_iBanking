@@ -9,7 +9,7 @@ import { LoginParam } from '~/types/ums/AuthUser';
 import { ButtonBase } from '../Elements/Button/ButtonBase';
 import BaseForm, { BaseFormRef } from '../Form/BaseForm';
 
-export const LoginView: React.FC = () => {
+const LoginView: React.FC = () => {
     const formRef = useRef<BaseFormRef>(null);
 
     const dispatch = useDispatch();
@@ -59,3 +59,5 @@ export const LoginView: React.FC = () => {
         </div>
     );
 };
+
+export default LoginView;

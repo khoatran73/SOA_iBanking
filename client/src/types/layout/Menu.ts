@@ -1,3 +1,4 @@
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { IconName } from '@fortawesome/free-solid-svg-icons';
 import { Identifier } from '../shared';
 
@@ -5,7 +6,7 @@ export interface Menu {
     id: Identifier;
     name: string;
     route: string;
-    icon: IconName;
+    icon: IconProp;
     parentId?: Identifier;
     background?: string;
     path?: string;
@@ -22,7 +23,7 @@ export interface MenuLayout {
     route: string;
     background: string;
     level: number;
-    icon: IconName;
+    icon: IconProp;
     key: string;
     parentKey?: string;
     leaf?: boolean;

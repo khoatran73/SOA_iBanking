@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import _ from 'lodash';
-import { ResponseFail, ResponseOk } from '../common/ApiResponse';
+import { ApiResponse, ResponseFail, ResponseOk } from '../common/ApiResponse';
 import { AuthUser, NewUser, LoginParams, AppUser } from '../types/Identity';
 import User from './../Models/User';
 
@@ -69,4 +69,9 @@ export const login = async (req: Request<any, any, LoginParams>, res: Response) 
     req.session.user = result.user;
 
     return res.json(ResponseOk(result));
+};
+
+export const logout = (req: Request, res: Response) => {
+    if (req.session.user) delete req.session.user;
+    return res.json(ResponseOk());
 };

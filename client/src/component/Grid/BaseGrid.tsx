@@ -161,6 +161,7 @@ const BaseGrid = React.forwardRef<BaseGridRef, BaseGridProps>((props, ref) => {
                         animateRows
                         getDataPath={props.getDataPath}
                         groupDefaultExpanded={props.groupDefaultExpanded}
+                        detailCellRenderer
                         {...props.gridConfig}
                     />
                 )}

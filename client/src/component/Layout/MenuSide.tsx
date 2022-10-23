@@ -1,5 +1,6 @@
 // @flow
 import { Menu } from 'antd';
+import clsx from 'clsx';
 import { SelectInfo } from 'rc-menu/lib/interface';
 import React, { useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,7 +14,7 @@ import { setOpenKeys, setSelectKeys } from '~/store/layoutSlice';
 import { MenuLayout } from '~/types/layout/Menu';
 import './MenuSide.scss';
 
-const { SubMenu, Item } = Menu;
+const { Item } = Menu;
 
 type MenuProps = {
     collapsed: boolean;
@@ -56,7 +57,7 @@ const MenuSide: React.FC<MenuProps> = ({ menuList, collapsed }) => {
     const renderMenu = (menus: MenuLayout[], start: number) => {
         return menus.map((menu, index) => {
             if (!menu.isDisplay) return <></>;
-            const { icon, name, route, background } = menu;
+            const { icon, name, route } = menu;
 
             if ((menu.children && menu.children.length === 0) || menu.children?.every(x => x.isDisplay === false)) {
                 return (
@@ -64,7 +65,7 @@ const MenuSide: React.FC<MenuProps> = ({ menuList, collapsed }) => {
                         key={route}
                         icon={
                             menu.level <= 1 ? (
-                                <MenuIcon background={background} icon={icon} name={name} />
+                                <MenuIcon icon={icon} name={name} />
                             ) : (
                                 <>
                                     {!collapsed ? (
@@ -95,7 +96,7 @@ const MenuSide: React.FC<MenuProps> = ({ menuList, collapsed }) => {
                         key={route}
                         icon={
                             menu.level < 2 ? (
-                                <MenuIcon background={background} icon={icon} name={name} />
+                                <MenuIcon icon={icon} name={name} />
                             ) : (
                                 <>
                                     {!collapsed ? (
@@ -126,26 +127,29 @@ const MenuSide: React.FC<MenuProps> = ({ menuList, collapsed }) => {
         const siderHeader = collapsed ? (
             <div
                 style={{
-                    fontSize: '12px',
                     backgroundImage: `url(${backgroundLogo})`,
                     backgroundSize: 'cover',
-                    position: 'fixed',
-                    maxWidth: 79,
-                    transition: '0.15s ease-out',
-                    zIndex: 50,
+                    color: 'var(--info)',
                 }}
+                className={clsx(
+                    'text-xs absolute  z-50 duration-150 ease-out',
+                    'h-16 w-full flex items-center justify-center bg-white',
+                )}
             >
-                MenuSide
+                IBanking
             </div>
         ) : (
             <div
-                className="flex items-center justify-center uppercase text-xl bg-cover fixed w-[250px] h-[64px] z-50 font-bold"
+                className={clsx(
+                    'flex items-center justify-center uppercase text-xl bg-cover',
+                    ' absolute w-[250px] h-[64px] z-50 font-bold duration-700 ease-out',
+                )}
                 style={{
                     backgroundImage: `url(${backgroundLogo})`,
-                    transition: '0.15s ease-out',
+                    color: 'var(--info)',
                 }}
             >
-                MenuSide
+                IBanking
             </div>
         );
 
@@ -167,9 +171,9 @@ const MenuSide: React.FC<MenuProps> = ({ menuList, collapsed }) => {
             openKeys={openCurrentKeys || [pathname]}
             onOpenChange={onOpenChange}
             onSelect={onSelectChange}
-            className="layout-page-sider-menu"
             inlineIndent={10}
             inlineCollapsed={collapsed}
+            className="custom-menu-side"
         >
             {renderSiderHeader()}
             {renderMenu(treeMenus || [], 0)}

@@ -1,9 +1,10 @@
-import { ColDef, GetDataPath } from '@ag-grid-community/core';
+import { GetDataPath } from '@ag-grid-community/core';
 import _ from 'lodash';
 import React, { useMemo, useRef } from 'react';
 import Loading from '~/component/Elements/loading/Loading';
-import BaseGrid, { BaseGridRef } from '~/component/Grid/BaseGrid';
+import BaseGrid, { BaseGridColDef, BaseGridRef } from '~/component/Grid/BaseGrid';
 import { GridToolbar } from '~/component/Grid/Components/GridToolbar';
+import { MenuIcon } from '~/component/Icon/MenuIcon';
 import { AppContainer } from '~/component/Layout/AppContainer';
 import ModalBase, { ModalRef } from '~/component/Modal/ModalBase';
 import { useBaseGrid } from '~/hook/useBaseGrid';
@@ -11,7 +12,6 @@ import { baseDeleteApi } from '~/lib/axios';
 import { Menu } from '~/types/layout/Menu';
 import { MENU_DELETE_API, MENU_INDEX_API } from './api/api';
 import MenuForm from './components/MenuForm';
-import { MenuColDefs } from './configs/MenuColDefs';
 
 const MenuListView: React.FC = () => {
     const gridRef = useRef<BaseGridRef>(null);
@@ -27,6 +27,9 @@ const MenuListView: React.FC = () => {
                 onSubmitSuccessfully={() => {
                     modalRef.current?.onClose();
                     gridController?.reloadData();
+                }}
+                initialValues={{
+                    icon: 'list-ul',
                 }}
                 onClose={modalRef.current?.onClose}
             />,
@@ -70,19 +73,43 @@ const MenuListView: React.FC = () => {
         );
     };
 
-    const autoGroupColumnDef = useMemo<ColDef>(() => {
-        return {
-            headerName: 'Tên',
-            minWidth: 300,
-            cellRendererParams: {
-                suppressCount: true,
-            },
-        };
-    }, []);
-
     const getDataPath = useMemo<GetDataPath>(() => {
         return (data: Menu) => {
             return data.group ?? [];
+        };
+    }, []);
+
+    const MenuColDefs: BaseGridColDef[] = [
+        {
+            headerName: 'Route',
+            field: nameof.full<Menu>(x => x.route),
+            minWidth: 400,
+            flex: 1,
+        },
+        {
+            headerName: 'Biểu tượng',
+            field: nameof.full<Menu>(x => x.icon),
+            width: 120,
+
+            cellRenderer: (params: any) => {
+                const data = _.get(params, 'data') as Menu;
+                const { icon, name } = data;
+                return (
+                    <div className="w-[50] h-full flex items-center justify-center">
+                        <MenuIcon icon={icon} name={name} />
+                    </div>
+                );
+            },
+        },
+    ];
+
+    const autoGroupColumnDef = useMemo<BaseGridColDef>(() => {
+        return {
+            headerName: 'Tên',
+            minWidth: 400,
+            cellRendererParams: {
+                suppressCount: true,
+            },
         };
     }, []);
 
