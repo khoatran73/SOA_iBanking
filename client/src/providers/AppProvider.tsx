@@ -41,13 +41,19 @@ type AppProviderProps = {
 
 export const AppProvider = ({ children }: AppProviderProps) => {
     return (
-        <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <QueryClientProvider client={queryClient}>
-                <AuthProvider>
-                    <Router>{children}</Router>
-                </AuthProvider>
-                {/* {process.env.NODE_ENV !== 'test' && <ReactQueryDevtools />} */}
-            </QueryClientProvider>
-        </ErrorBoundary>
+        <React.Suspense
+            fallback={
+                <div className="h-screen w-screen flex items-center justify-center">{/*<Spinner size="xl"/>*/}</div>
+            }
+        >
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+                <QueryClientProvider client={queryClient}>
+                    <AuthProvider>
+                        <Router>{children}</Router>
+                    </AuthProvider>
+                    {/* {process.env.NODE_ENV !== 'test' && <ReactQueryDevtools />} */}
+                </QueryClientProvider>
+            </ErrorBoundary>
+        </React.Suspense>
     );
 };

@@ -17,6 +17,7 @@ const schema = new Schema<IMenu, MenuModel, IMenuMethod>(
         path: { type: String, default: '' },
         isDisplay: { type: Boolean, default: false },
         level: { type: Number, default: 1 },
+        permissions: String,
         parentId: String,
     },
     { timestamps: true },

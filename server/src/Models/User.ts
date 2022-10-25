@@ -4,7 +4,7 @@ import { Identifier } from '../types/shared';
 
 export interface IUser {
     id?: Identifier;
-    userName: string;
+    username: string;
     passwordHash: string;
     salt: string;
     fullName: string;
@@ -22,7 +22,7 @@ type UserModel = Model<IUser, {}, IUserMethod>;
 
 const schema = new Schema<IUser, UserModel, IUserMethod>({
     id: { type: String, unique: true, required: true, default: crypto.randomUUID() },
-    userName: { type: String, unique: true, required: true },
+    username: { type: String, unique: true, required: true },
     passwordHash: { type: String, unique: true, required: true },
     salt: { type: String, unique: true, required: true },
     fullName: { type: String, default: '' },

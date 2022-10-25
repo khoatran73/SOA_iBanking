@@ -2,6 +2,7 @@ import { Form, FormInstance } from 'antd';
 import { NamePath } from 'antd/lib/form/interface';
 import clsx from 'clsx';
 import React, { useImperativeHandle, useRef } from 'react';
+import './styles/BaseForm.scss'
 
 export interface BaseFormProps {
     initialValues?: Record<string, any>;
@@ -16,7 +17,7 @@ export interface BaseFormProps {
 }
 
 export interface BaseFormItem {
-    label: React.ReactNode;
+    label?: React.ReactNode;
     name: string;
     rules?: Array<Record<string, any>>;
     initialValue?: any;
@@ -58,7 +59,7 @@ const BaseForm = React.forwardRef<BaseFormRef, BaseFormProps>((props, ref) => {
     }));
 
     return (
-        <div className={clsx('w-full h-full', props.className)}>
+        <div className={clsx('w-full h-full base-form', props.className)}>
             <Form
                 labelCol={{ span: props.labelCol ?? 6 }}
                 wrapperCol={{ span: 24 - Number(props.labelCol ?? 6) }}

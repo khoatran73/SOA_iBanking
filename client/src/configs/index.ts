@@ -7,3 +7,6 @@ export const API_LOGOUT = APP_API_PATH + '/identity/logout';
 //layout
 
 export const API_LAYOUT = APP_API_PATH + '/menu/layout';
+
+// common api
+export const COMBO_USER_WITH_KEY_API = APP_API_PATH + '/common/combo-user-with-key';

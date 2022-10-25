@@ -12,7 +12,7 @@ declare module 'express-session' {
 
 export const checkLogin = async (req: Request, res: Response) => {
     // const user = req.session.user;
-    const user = (await User.findOne({ userName: 'admin' })) as AppUser;
+    const user = (await User.findOne({ username: 'admin' })) as AppUser;
     if (user) {
         const result: AuthUser = {
             rights: [''],
@@ -25,7 +25,7 @@ export const checkLogin = async (req: Request, res: Response) => {
 
 export const addUser = async (req: Request<any, any, NewUser>, res: Response) => {
     try {
-        const isExistUser = Boolean(await User.findOne({ userName: req.body.userName }));
+        const isExistUser = Boolean(await User.findOne({ username: req.body.username }));
 
         if (isExistUser) {
             return res.json(ResponseFail('UserName existed!'));
@@ -45,7 +45,7 @@ export const addUser = async (req: Request<any, any, NewUser>, res: Response) =>
 };
 
 export const login = async (req: Request<any, any, LoginParams>, res: Response) => {
-    const user = await User.findOne({ userName: req.body.userName });
+    const user = await User.findOne({ username: req.body.username });
 
     if (!user) {
         return res.json(ResponseFail('Tài khoản hoặc mật khẩu không đúng!'));
@@ -62,7 +62,7 @@ export const login = async (req: Request<any, any, LoginParams>, res: Response) 
             fullName: user.fullName,
             id: user.id,
             isSupper: user.hasRoleAdminSystem(),
-            userName: user.userName,
+            username: user.username,
             phoneNumber: user.phoneNumber,
         },
     };

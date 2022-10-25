@@ -5,7 +5,7 @@ export interface AuthUser {
 
 export interface AppUser {
     id: string;
-    userName: string;
+    username: string;
     fullName: string;
     isSupper: boolean;
     email: string;
@@ -14,13 +14,13 @@ export interface AppUser {
 }
 
 export interface LoginParams {
-    userName: string;
+    username: string;
     password: string;
     rememberMe: boolean;
 }
 
 export interface NewUser {
-    userName: string;
+    username: string;
     password: string;
     fullName: string;
 }

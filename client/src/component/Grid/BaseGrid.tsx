@@ -2,14 +2,13 @@ import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-mod
 import { ColDef, ColGroupDef, GetDataPath, ModuleRegistry } from '@ag-grid-community/core';
 import { AgGridReact } from '@ag-grid-community/react';
 import { RowGroupingModule } from '@ag-grid-enterprise/row-grouping';
-import { faEdit, faFile, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faFile, faPlus, faTrash, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { Popconfirm } from 'antd';
 import _ from 'lodash';
 import React, { ReactChild } from 'react';
 import { ButtonBase } from '../Elements/Button/ButtonBase';
-import Loading from '../Elements/loading/Loading';
 import './styles/BaseGrid.scss';
 
 export interface BaseGridColDef extends ColDef, Partial<ColGroupDef> {}
@@ -28,10 +27,12 @@ export interface BaseGridProps {
         hasDeleteBtn?: boolean;
         hasDetailBtn?: boolean;
         hasCreateChildBtn?: boolean;
+        hasAddUserBtn?: boolean;
         onClickEditBtn?: (data: any) => void;
         onClickDeleteBtn?: (data: any) => void;
         onClickDetailBtn?: (data: any) => void;
         onClickCreateChildBtn?: (data: any) => void;
+        onClickAddUserBtn?: (data: any) => void;
     };
     actionRowsWidth?: number;
     treeData?: boolean;
@@ -103,6 +104,16 @@ const BaseGrid = React.forwardRef<BaseGridRef, BaseGridProps>((props, ref) => {
                                 tooltip="Thêm dữ liệu con"
                             />
                         )}
+                        {actionRowsList?.hasAddUserBtn && (
+                            <ButtonBase
+                                startIcon={faUserPlus}
+                                variant={'primary'}
+                                onClick={() => {
+                                    actionRowsList.onClickAddUserBtn?.(data);
+                                }}
+                                tooltip="Thay đổi người dùng"
+                            />
+                        )}
                         {actionRowsList?.hasEditBtn && (
                             <ButtonBase
                                 startIcon={faEdit}
@@ -148,16 +159,13 @@ const BaseGrid = React.forwardRef<BaseGridRef, BaseGridProps>((props, ref) => {
                         }}
                         suppressAutoSize
                         pagination={pagination}
-                        suppressLoadingOverlay
-                        loadingOverlayComponent={<Loading />}
-                        overlayLoadingTemplate={'this is loading'}
                         // onGridReady={() => {
                         //     // console.log(123);
                         //     setTimeout(function () {
                         //         gridRef.current?.api.sizeColumnsToFit();
                         //     }, 200);
                         // }}
-                        treeData={true}
+                        treeData={props.treeData}
                         animateRows
                         getDataPath={props.getDataPath}
                         groupDefaultExpanded={props.groupDefaultExpanded}

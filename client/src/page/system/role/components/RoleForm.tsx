@@ -1,5 +1,5 @@
 import { faClose, faSave } from '@fortawesome/free-solid-svg-icons';
-import { Checkbox, DatePicker, Input } from 'antd';
+import { Input } from 'antd';
 import { Method } from 'axios';
 import React, { useRef } from 'react';
 import { ButtonBase } from '~/component/Elements/Button/ButtonBase';
@@ -7,19 +7,18 @@ import BaseForm, { BaseFormRef } from '~/component/Form/BaseForm';
 import { AppModalContainer } from '~/component/Layout/AppModalContainer';
 import NotificationConstant from '~/configs/contants';
 import { requestApi } from '~/lib/axios';
-import { Menu } from '~/types/layout/Menu';
-import { Identifier } from '~/types/shared';
+import { Role } from '~/types/ums/Role';
 import NotifyUtil from '~/util/NotifyUtil';
-import { MENU_CREATE_API, MENU_UPDATE_API } from '../api/api';
+import { ROLE_CREATE_API, ROLE_UPDATE_API } from '../api/api';
+
 
 interface Props {
-    initialValues?: Partial<Menu>;
-    parentId?: Identifier;
+    initialValues?: Partial<Role>;
     onClose?: () => void;
     onSubmitSuccessfully?: () => void;
 }
 
-const MenuForm: React.FC<Props> = props => {
+const RoleForm: React.FC<Props> = props => {
     const formRef = useRef<BaseFormRef>(null);
 
     const onSubmit = async () => {
@@ -41,34 +40,21 @@ const MenuForm: React.FC<Props> = props => {
             }
         > = {
             create: {
-                url: MENU_CREATE_API,
+                url: ROLE_CREATE_API,
                 method: 'post',
                 message: NotificationConstant.DESCRIPTION_CREATE_SUCCESS,
             },
             update: {
-                url: `${MENU_UPDATE_API}/${props.initialValues?.id}`,
+                url: `${ROLE_UPDATE_API}/${props.initialValues?.id}`,
                 method: 'put',
                 message: NotificationConstant.DESCRIPTION_UPDATE_SUCCESS,
             },
-            createChild: {
-                url: MENU_CREATE_API,
-                method: 'post',
-                message: 'Tạo mới Menu con thành công!',
-            },
         };
 
-        let urlParam;
-        if (props.initialValues) {
-            urlParam = urlParams.update;
-        } else if (props.parentId) {
-            urlParam = urlParams.createChild;
-        } else {
-            urlParam = urlParams.create;
-        }
+        const urlParam = props.initialValues ? urlParams.update : urlParams.create;
 
         const response = await requestApi(urlParam.method, urlParam.url, {
             ...formValues,
-            parentId: props.parentId,
         });
 
         if (response.data?.success) {
@@ -86,40 +72,16 @@ const MenuForm: React.FC<Props> = props => {
                 ref={formRef}
                 baseFormItem={[
                     {
-                        label: 'Tên menu',
-                        name: nameof.full<Menu>(x => x.name),
-                        children: <Input placeholder="Nhập tên menu ..." />,
+                        label: 'Mã vai trò',
+                        name: nameof.full<Role>(x => x.code),
+                        children: <Input placeholder="Nhập mã vai trò ..." />,
                         rules: [{ required: true, message: NotificationConstant.NOT_EMPTY }],
                     },
                     {
-                        label: 'Route Path',
-                        name: nameof.full<Menu>(x => x.route),
-                        children: <Input placeholder="Nhập route ..." />,
+                        label: 'Tên vai trò',
+                        name: nameof.full<Role>(x => x.name),
+                        children: <Input placeholder="Nhập tên vai trò ..." />,
                         rules: [{ required: true, message: NotificationConstant.NOT_EMPTY }],
-                    },
-                    {
-                        label: 'Biểu tượng',
-                        name: nameof.full<Menu>(x => x.icon),
-                        children: <Input placeholder="Nhập biểu tượng..." />,
-                        rules: [{ required: true, message: NotificationConstant.NOT_EMPTY }],
-                    },
-                    {
-                        label: 'Level',
-                        name: nameof.full<Menu>(x => x.level),
-                        children: <Input type="number" placeholder="Nhập level..." />,
-                        rules: [{ required: true, message: NotificationConstant.NOT_EMPTY }],
-                    },
-                    {
-                        label: 'Hiển thị',
-                        name: nameof.full<Menu>(x => x.isDisplay),
-                        children: <Checkbox />,
-                        initialValue: false,
-                        valuePropName: 'checked',
-                    },
-                    {
-                        label: 'Quyền xem',
-                        name: nameof.full<Menu>(x => x.permissions),
-                        children: <Input placeholder="Nhập quyền..." />,
                     },
                 ]}
                 labelAlign="left"
@@ -137,4 +99,4 @@ const MenuForm: React.FC<Props> = props => {
     );
 };
 
-export default MenuForm;
+export default RoleForm;

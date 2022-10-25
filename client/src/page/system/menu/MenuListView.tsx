@@ -113,36 +113,42 @@ const MenuListView: React.FC = () => {
         };
     }, []);
 
-    if (gridController?.loading) return <Loading />;
     return (
         <AppContainer>
-            <BaseGrid
-                columnDefs={MenuColDefs}
-                data={gridController?.data}
-                ref={gridRef}
-                numberRows={false}
-                pagination={false}
-                actionRowsList={{
-                    hasEditBtn: true,
-                    hasDeleteBtn: true,
-                    hasCreateChildBtn: true,
-                    onClickCreateChildBtn: onCreateChild,
-                    onClickEditBtn: onUpdate,
-                    onClickDeleteBtn: onDelete,
-                }}
-                actionRowsWidth={120}
-                autoGroupColumnDef={autoGroupColumnDef}
-                getDataPath={getDataPath}
-                groupDefaultExpanded={-1}
-            >
-                <GridToolbar
-                    hasCreateButton
-                    hasRefreshButton
-                    onClickCreateButton={onCreate}
-                    onClickRefreshButton={() => gridController?.reloadData()}
-                />
-            </BaseGrid>
-            <ModalBase ref={modalRef} />
+            {gridController?.loading ? (
+                <Loading />
+            ) : (
+                <>
+                    <BaseGrid
+                        columnDefs={MenuColDefs}
+                        data={gridController?.data}
+                        ref={gridRef}
+                        numberRows={false}
+                        pagination={false}
+                        actionRowsList={{
+                            hasEditBtn: true,
+                            hasDeleteBtn: true,
+                            hasCreateChildBtn: true,
+                            onClickCreateChildBtn: onCreateChild,
+                            onClickEditBtn: onUpdate,
+                            onClickDeleteBtn: onDelete,
+                        }}
+                        treeData
+                        actionRowsWidth={120}
+                        autoGroupColumnDef={autoGroupColumnDef}
+                        getDataPath={getDataPath}
+                        groupDefaultExpanded={-1}
+                    >
+                        <GridToolbar
+                            hasCreateButton
+                            hasRefreshButton
+                            onClickCreateButton={onCreate}
+                            onClickRefreshButton={() => gridController?.reloadData()}
+                        />
+                    </BaseGrid>
+                    <ModalBase ref={modalRef} />
+                </>
+            )}
         </AppContainer>
     );
 };

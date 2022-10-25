@@ -32,7 +32,7 @@ const LoginView: React.FC = () => {
                     baseFormItem={[
                         {
                             label: 'Tài khoản',
-                            name: nameof.full<LoginParam>(x => x.userName),
+                            name: nameof.full<LoginParam>(x => x.username),
                             children: <Input />,
                             rules: [{ required: true }],
                         },

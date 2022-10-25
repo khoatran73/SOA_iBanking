@@ -57,7 +57,7 @@ const Header: React.FC<Props> = props => {
                             icon={<UserOutlined style={{ color: '#198ae3' }} />}
                             className="flex items-center justify-center bg-white rounded-full"
                         />
-                        <span className="mx-2">{authUser?.user.userName}</span>
+                        <span className="mx-2">{authUser?.user.username}</span>
                         <CaretDownFilled />
                     </div>
                 </Dropdown>
