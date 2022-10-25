@@ -11,6 +11,7 @@ export interface IUser {
     emailAddress: string;
     phoneNumber: string;
     isAdmin: boolean;
+    amount: number;
 }
 
 interface IUserMethod {
@@ -29,6 +30,7 @@ const schema = new Schema<IUser, UserModel, IUserMethod>({
     emailAddress: { type: String, default: '' },
     phoneNumber: { type: String, default: '' },
     isAdmin: { type: Boolean, default: false },
+    amount: { type: Number, default: 0 },
 });
 
 schema.methods.hasRoleAdminSystem = function () {

@@ -20,23 +20,21 @@ export interface ITuition {
     status: string;
     startDate: Date;
     endDate: Date;
-    expired: boolean;
+    expiredAt: Date;
 }
 type TuitionModel = Model<ITuition, {}, {}>;
 
 const schema = new Schema<ITuition>({
     id: { type: String, unique: true, required: true, default: crypto.randomUUID() },
-    user: { type: Schema.Types.Mixed, ref: 'User'},
-    subject: [{ type: Schema.Types.Mixed, ref: 'Subject' }],
+    user: { type: Object, ref: 'User.id'},
+    subject: [{ type: Object, ref: 'Subject.id' }],
     tuitionCode: { type: String, unique: true, required: true },
     totalFee: { type: Number, default: 0 },
     totalCredit: { type: Number, default: 0 },
     status: { type: String, default: 'waiting' },
-    startDate: { type: Date, default: Date.now },
-    endDate: { type: Date, default: Date.now },
-    expired: { type: Boolean, default: false },
-});
+    expiredAt: { type: Date, default: Date.now() + 86400000 }, // 1 day
+},{timestamps: true});
 
-const Subject = model<ITuition, TuitionModel>('Tuition', schema);
+const Tuition = model<ITuition, TuitionModel>('Tuition', schema);
 
-export default Subject;
+export default Tuition;

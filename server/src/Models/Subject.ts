@@ -18,7 +18,7 @@ const schema = new Schema<ISubject>({
     subjectCode: { type: String, unique: true, required: true },
     subjectFee: { type: Number, required: true },
     credits: { type: Number, required: true },
-});
+},{timestamps: true});
 
 const Subject = model<ISubject, SubjectModel>('Subject', schema);
 
