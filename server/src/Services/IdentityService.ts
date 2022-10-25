@@ -11,8 +11,7 @@ declare module 'express-session' {
 }
 
 export const checkLogin = async (req: Request, res: Response) => {
-    // const user = req.session.user;
-    const user = (await User.findOne({ username: 'admin' })) as AppUser;
+    const user = req.session.user;
     if (user) {
         const result: AuthUser = {
             rights: [''],
