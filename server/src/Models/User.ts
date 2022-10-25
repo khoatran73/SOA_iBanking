@@ -24,8 +24,8 @@ type UserModel = Model<IUser, {}, IUserMethod>;
 const schema = new Schema<IUser, UserModel, IUserMethod>({
     id: { type: String, unique: true, required: true, default: crypto.randomUUID() },
     username: { type: String, unique: true, required: true },
-    passwordHash: { type: String, unique: true, required: true },
-    salt: { type: String, unique: true, required: true },
+    passwordHash: { type: String, required: true },
+    salt: { type: String, required: true },
     fullName: { type: String, default: '' },
     emailAddress: { type: String, default: '' },
     phoneNumber: { type: String, default: '' },

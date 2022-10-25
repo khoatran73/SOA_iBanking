@@ -1,5 +1,6 @@
 import React from 'react';
 import { matchRoutes, RouteMatch, RouteObject, useRoutes } from 'react-router-dom';
+import PrivateRoute from './PrivateRoute';
 
 //layout
 const LayoutPage = React.lazy(() => import('~/component/Layout/LayoutPage'));
@@ -9,6 +10,7 @@ const NotFound = React.lazy(() => import('~/component/Layout/NotFound'));
 //system
 const MenuListView = React.lazy(() => import('~/page/system/menu/MenuListView'));
 const RoleListView = React.lazy(() => import('~/page/system/role/RoleListView'));
+const UserListView = React.lazy(() => import('~/page/system/user/UserListView'));
 
 const routeList = [
     {
@@ -20,11 +22,23 @@ const routeList = [
                 children: [
                     {
                         path: 'menu',
-                        element: <MenuListView />,
+                        element: (
+                            <PrivateRoute>
+                                <MenuListView />
+                            </PrivateRoute>
+                        ),
                     },
                     {
                         path: 'role',
-                        element: <RoleListView />,
+                        element: (
+                            <PrivateRoute>
+                                <RoleListView />
+                            </PrivateRoute>
+                        ),
+                    },
+                    {
+                        path: 'user',
+                        element: <UserListView />,
                     },
                 ],
             },

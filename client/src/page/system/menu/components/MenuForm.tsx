@@ -1,15 +1,18 @@
 import { faClose, faSave } from '@fortawesome/free-solid-svg-icons';
-import { Checkbox, DatePicker, Input } from 'antd';
+import { Checkbox, DatePicker, Input, Select } from 'antd';
 import { Method } from 'axios';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ButtonBase } from '~/component/Elements/Button/ButtonBase';
+import Loading from '~/component/Elements/loading/Loading';
 import BaseForm, { BaseFormRef } from '~/component/Form/BaseForm';
 import { AppModalContainer } from '~/component/Layout/AppModalContainer';
 import NotificationConstant from '~/configs/contants';
+import { useMergeState } from '~/hook/useMergeState';
 import { requestApi } from '~/lib/axios';
 import { Menu } from '~/types/layout/Menu';
-import { Identifier } from '~/types/shared';
+import { ComboOption, Identifier } from '~/types/shared';
 import NotifyUtil from '~/util/NotifyUtil';
+import { COMBO_ROLE_API } from '../../role/api/api';
 import { MENU_CREATE_API, MENU_UPDATE_API } from '../api/api';
 
 interface Props {
@@ -19,8 +22,31 @@ interface Props {
     onSubmitSuccessfully?: () => void;
 }
 
+interface State {
+    loading: boolean;
+    roles: ComboOption[];
+}
+
 const MenuForm: React.FC<Props> = props => {
     const formRef = useRef<BaseFormRef>(null);
+    const [state, setState] = useMergeState<State>({
+        loading: true,
+        roles: [],
+    });
+
+    const fetchComBoPermission = async () => {
+        const res = await requestApi('get', COMBO_ROLE_API);
+        if (res.data?.success) {
+            setState({
+                loading: false,
+                roles: res.data?.result,
+            });
+        }
+    };
+
+    useEffect(() => {
+        fetchComBoPermission();
+    }, []);
 
     const onSubmit = async () => {
         const isValidForm = await formRef.current?.isFieldsValidate();
@@ -79,6 +105,7 @@ const MenuForm: React.FC<Props> = props => {
         }
     };
 
+    if (state.loading) return <Loading />
     return (
         <AppModalContainer>
             <BaseForm
@@ -119,7 +146,14 @@ const MenuForm: React.FC<Props> = props => {
                     {
                         label: 'Quyền xem',
                         name: nameof.full<Menu>(x => x.permissions),
-                        children: <Input placeholder="Nhập quyền..." />,
+                        children: (
+                            <Select
+                                options={state.roles}
+                                showSearch
+                                allowClear
+                                placeholder="Chọn quyền..."
+                            />
+                        ),
                     },
                 ]}
                 labelAlign="left"

@@ -8,7 +8,7 @@ import User from '../Models/User';
 
 export const index = async (req: Request<any, any, any, PaginatedListQuery>, res: Response) => {
     const tuitionByUser = await Tuition.find({
-        'user.id': req.session.user.id,
+        'user.id': req.session.user?.id,
         status: 'waiting',
         expiredAt: { $gte: Date.now() },
     });

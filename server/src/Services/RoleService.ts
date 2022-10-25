@@ -6,6 +6,7 @@ import Role from '../Models/Role';
 import User from '../Models/User';
 import UserRole from '../Models/UserRole';
 import { IRole, IUserRole, RoleGrid, UserRoleUpdateRequest } from '../types/Role';
+import { ComboOption } from '../types/shared';
 
 export const getRoleIndex = async (req: Request<any, any, any, PaginatedListQuery>, res: Response) => {
     const roles = await Role.find();
@@ -67,12 +68,27 @@ export const deleteRole = async (req: Request<{ id: string }, any, IRole>, res: 
         .catch(err => res.json(ResponseFail(err?.message)));
 };
 
+export const getComboRole = async (req: Request, res: Response) => {
+    const roles = await Role.find();
+
+    const result = roles.map(
+        role =>
+            ({
+                value: role.code,
+                label: role.name,
+            } as ComboOption),
+    );
+
+    return res.json(ResponseOk(result));
+};
+
 export const updateUserRole = async (req: Request<any, any, UserRoleUpdateRequest, any>, res: Response) => {
     const userRoles = await UserRole.find({ roleId: req.body.roleId });
     const { roleId, userIds } = req.body;
     const userRolesWillDelete: IUserRole[] = userRoles.filter(ur => !userIds.includes(ur.userId));
     const userRolesWillUpdate: IUserRole[] = userRoles.filter(ur => userIds.includes(ur.userId));
     const userRolesWillAdd: IUserRole[] = [];
+
     userIds.forEach(userId => {
         if (!userRolesWillUpdate.map(x => x.userId).includes(userId))
             userRolesWillAdd.push({
@@ -81,8 +97,8 @@ export const updateUserRole = async (req: Request<any, any, UserRoleUpdateReques
             } as IUserRole);
     });
 
-    // await UserRole.deleteMany({ id: id });
-    // await UserRole.addMenu 
+    await UserRole.deleteMany({ roleId: { $in: userRolesWillDelete.map(x => x.roleId) } });
+    await UserRole.insertMany(userRolesWillAdd);
 
-    return res.json(ResponseOk())
+    return res.json(ResponseOk());
 };

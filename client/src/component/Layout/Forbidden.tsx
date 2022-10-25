@@ -50,7 +50,7 @@ const Forbidden: React.FC<Props> = (props: Props) => {
                             >
                                 <a
                                     className="ant-btn ant-btn-primary"
-                                    href={`/${route || 'home'}`}
+                                    href={`/${route || ''}`}
                                     style={{
                                         fontSize: 16,
                                         display: 'flex',

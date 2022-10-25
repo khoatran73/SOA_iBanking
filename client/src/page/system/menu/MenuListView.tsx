@@ -83,14 +83,12 @@ const MenuListView: React.FC = () => {
         {
             headerName: 'Route',
             field: nameof.full<Menu>(x => x.route),
-            minWidth: 400,
-            flex: 1,
+            minWidth: 500,
         },
         {
             headerName: 'Biểu tượng',
             field: nameof.full<Menu>(x => x.icon),
             width: 120,
-
             cellRenderer: (params: any) => {
                 const data = _.get(params, 'data') as Menu;
                 const { icon, name } = data;
@@ -106,7 +104,7 @@ const MenuListView: React.FC = () => {
     const autoGroupColumnDef = useMemo<BaseGridColDef>(() => {
         return {
             headerName: 'Tên',
-            minWidth: 400,
+            minWidth: 500,
             cellRendererParams: {
                 suppressCount: true,
             },

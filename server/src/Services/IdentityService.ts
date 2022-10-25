@@ -1,20 +1,28 @@
 import { Request, Response } from 'express';
 import _ from 'lodash';
 import { ApiResponse, ResponseFail, ResponseOk } from '../common/ApiResponse';
+import Role from '../Models/Role';
 import { AuthUser, NewUser, LoginParams, AppUser } from '../types/Identity';
 import User from './../Models/User';
+import UserRole from './../Models/UserRole';
 
 declare module 'express-session' {
     interface SessionData {
-        user: any;
+        user: AppUser;
     }
 }
 
 export const checkLogin = async (req: Request, res: Response) => {
     const user = req.session.user;
     if (user) {
+        const isSupper = user.isSupper;
+        const userRoles = await UserRole.find({ userId: user.id });
+        const roleIds = userRoles.map(x => x.roleId);
+        const roles = isSupper ? await Role.find() : await Role.find({ id: { $in: roleIds } });
+        const rolesCode = roles.map(x => x.code);
+
         const result: AuthUser = {
-            rights: [''],
+            rights: rolesCode,
             user,
         };
         return res.json(ResponseOk(result));
@@ -54,13 +62,19 @@ export const login = async (req: Request<any, any, LoginParams>, res: Response) 
         return res.json(ResponseFail('Tài khoản hoặc mật khẩu không đúng!'));
     }
 
+    const isSupper = user.hasRoleAdminSystem();
+    const userRoles = await UserRole.find({ userId: user.id });
+    const roleIds = userRoles.map(x => x.roleId);
+    const roles = isSupper ? await Role.find() : await Role.find({ id: { $in: roleIds } });
+    const rolesCode = roles.map(x => x.code);
+
     const result: AuthUser = {
-        rights: [''],
+        rights: rolesCode,
         user: {
             email: user.emailAddress,
             fullName: user.fullName,
             id: user.id,
-            isSupper: user.hasRoleAdminSystem(),
+            isSupper: isSupper,
             username: user.username,
             phoneNumber: user.phoneNumber,
         },

@@ -14,12 +14,14 @@ export type GridToolbarProps = {
     hasRefreshButton?: boolean;
     onClickCreateButton?: () => void;
     onClickRefreshButton?: () => void;
+    renderActionRightToolBar?: () => JSX.Element;
 } & ToolbarType;
 
 const basicToolbar = (props: GridToolbarProps) => {
-    const { hasCreateButton, hasRefreshButton } = props;
+    const { hasCreateButton = true, hasRefreshButton = true } = props;
     return (
         <div className="flex items-center justify-end">
+            {props.renderActionRightToolBar?.()}
             {hasCreateButton && (
                 <ButtonBase
                     onClick={() => props.onClickCreateButton?.()}

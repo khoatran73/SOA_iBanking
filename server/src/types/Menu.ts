@@ -9,7 +9,7 @@ export interface IMenu {
     background?: string;
     path: string;
     level?: number;
-    permissions?: string[];
+    permissions?: string;
     isDisplay?: boolean;
     displayIndex?: number | null;
     group?: string[];

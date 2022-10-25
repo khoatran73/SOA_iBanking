@@ -3,6 +3,8 @@ import _ from 'lodash';
 import { ResponseFail, ResponseOk } from '../common/ApiResponse';
 import { PaginatedListConstructor, PaginatedListQuery } from '../common/PaginatedList';
 import Menu from '../Models/Menu';
+import Role from '../Models/Role';
+import UserRole from '../Models/UserRole';
 import { IMenu, MenuLayout } from '../types/Menu';
 
 export const getMenuIndex = async (req: Request<any, any, any, PaginatedListQuery>, res: Response) => {
@@ -20,21 +22,30 @@ export const getMenuIndex = async (req: Request<any, any, any, PaginatedListQuer
 
 export const getMenuLayout = async (req: Request, res: Response) => {
     const menus = await Menu.find();
+    const user = req.session.user;
 
-    const result = menus.map(menu => {
-        return {
-            key: menu.id,
-            name: menu.name,
-            route: menu.route,
-            icon: menu.icon,
-            parentKey: menu.parentId,
-            background: menu.background,
-            isDisplay: menu.isDisplay,
-            level: menu.level,
-            path: menu.path,
-            breadcrumbs: buildTreeGroup(menu.path, menus),
-        } as MenuLayout;
-    });
+    const isSupper = user?.isSupper;
+    const userRoles = await UserRole.find({ userId: user?.id });
+    const roleIds = userRoles.map(x => x.roleId);
+    const roles = isSupper ? await Role.find() : await Role.find({ id: { $in: roleIds } });
+    const rolesCode = roles.map(x => x.code);
+
+    const result = menus
+        .filter(menu => !menu.permissions || rolesCode.includes(menu.permissions ?? ''))
+        .map(menu => {
+            return {
+                key: menu.id,
+                name: menu.name,
+                route: menu.route,
+                icon: menu.icon,
+                parentKey: menu.parentId,
+                background: menu.background,
+                isDisplay: menu.isDisplay,
+                level: menu.level,
+                path: menu.path,
+                breadcrumbs: buildTreeGroup(menu.path, menus),
+            } as MenuLayout;
+        });
 
     return res.json(ResponseOk<MenuLayout[]>(result));
 };
