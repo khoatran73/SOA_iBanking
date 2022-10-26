@@ -77,6 +77,7 @@ export const login = async (req: Request<any, any, LoginParams>, res: Response) 
             isSupper: isSupper,
             username: user.username,
             phoneNumber: user.phoneNumber,
+            amount: user.amount
         },
     };
     req.session.user = result.user;

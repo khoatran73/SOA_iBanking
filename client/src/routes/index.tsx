@@ -12,6 +12,9 @@ const MenuListView = React.lazy(() => import('~/page/system/menu/MenuListView'))
 const RoleListView = React.lazy(() => import('~/page/system/role/RoleListView'));
 const UserListView = React.lazy(() => import('~/page/system/user/UserListView'));
 
+//home 
+const TuitionListView = React.lazy(() => import('~/page/home/tuition/TuitionListView'));
+
 const routeList = [
     {
         path: '/',
@@ -23,17 +26,17 @@ const routeList = [
                     {
                         path: 'menu',
                         element: (
-                            <PrivateRoute>
+                            // <PrivateRoute>
                                 <MenuListView />
-                            </PrivateRoute>
+                            // </PrivateRoute>
                         ),
                     },
                     {
                         path: 'role',
                         element: (
-                            <PrivateRoute>
+                            // <PrivateRoute>
                                 <RoleListView />
-                            </PrivateRoute>
+                            // </PrivateRoute>
                         ),
                     },
                     {
@@ -44,6 +47,15 @@ const routeList = [
                             </PrivateRoute>
                         ),
                     },
+                ],
+            },
+            {
+                path: 'home',
+                children: [
+                    {
+                        path: 'tuition',
+                        element: <TuitionListView />,
+                    }
                 ],
             },
         ],

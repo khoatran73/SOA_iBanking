@@ -14,6 +14,7 @@ export interface BaseFormProps {
     className?: string;
     width?: number | string;
     renderBtnBottom?: () => JSX.Element;
+    renderExtras?: () => JSX.Element;
 }
 
 export interface BaseFormItem {
@@ -74,6 +75,9 @@ const BaseForm = React.forwardRef<BaseFormRef, BaseFormProps>((props, ref) => {
                 }}
             >
                 {props.baseFormItem?.map(item => {
+                    console.log(item)
+                    console.log('asd',props.initialValues);
+                    
                     return (
                         <Form.Item key={item.name} {...item}>
                             {item.children}
@@ -81,6 +85,7 @@ const BaseForm = React.forwardRef<BaseFormRef, BaseFormProps>((props, ref) => {
                     );
                 })}
             </Form>
+            {props.renderExtras?.()}
             {props.renderBtnBottom?.()}
         </div>
     );

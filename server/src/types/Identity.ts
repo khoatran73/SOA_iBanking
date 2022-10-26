@@ -3,14 +3,14 @@ export interface AuthUser {
     user: AppUser;
 }
 
-export interface AppUser {
+export type AppUser = {
     id: string;
     username: string;
     fullName: string;
     isSupper: boolean;
     email: string;
     phoneNumber?: string;
-    orgId?: string;
+    amount?: number;
 }
 
 export interface LoginParams {

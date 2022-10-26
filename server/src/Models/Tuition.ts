@@ -16,7 +16,6 @@ export interface ITuition {
     subject: ISubject;
     tuitionCode: string;
     totalFee: Number;
-    totalCredit: Number;
     status: string;
     startDate: Date;
     endDate: Date;
@@ -29,12 +28,11 @@ const schema = new Schema<ITuition>({
     user: { type: Object, ref: 'User.id'},
     subject: [{ type: Object, ref: 'Subject.id' }],
     tuitionCode: { type: String, unique: true, required: true },
-    totalFee: { type: Number, default: 0 },
-    totalCredit: { type: Number, default: 0 },
+    totalFee: { type: Number, default: 0 , required: true },
     status: { type: String, default: 'waiting' },
     expiredAt: { type: Date, default: Date.now() + 86400000 }, // 1 day
 },{timestamps: true});
 
 const Tuition = model<ITuition, TuitionModel>('Tuition', schema);
 
-export default Tuition;
+export default Tuition; 
