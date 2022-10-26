@@ -44,6 +44,8 @@ export const getMenuLayout = async (req: Request, res: Response) => {
                 level: menu.level,
                 path: menu.path,
                 breadcrumbs: buildTreeGroup(menu.path, menus),
+                hasPermissionToAccess: menu.permissions,
+                permissions: menu.permissions,
             } as MenuLayout;
         });
 

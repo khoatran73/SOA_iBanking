@@ -38,7 +38,11 @@ const routeList = [
                     },
                     {
                         path: 'user',
-                        element: <UserListView />,
+                        element: (
+                            <PrivateRoute>
+                                <UserListView />
+                            </PrivateRoute>
+                        ),
                     },
                 ],
             },

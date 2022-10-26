@@ -28,6 +28,7 @@ export interface MenuLayout {
     parentKey?: string;
     leaf?: boolean;
     children?: MenuLayout[];
+    permissions?: string;
     isDisplay?: boolean;
     breadcrumbs?: Array<string>;
     isLeaf?: boolean;

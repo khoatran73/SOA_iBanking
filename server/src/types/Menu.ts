@@ -27,4 +27,6 @@ export interface MenuLayout {
     isDisplay?: boolean;
     breadcrumbs?: Array<string>;
     path: string;
+    hasPermissionToAccess?: boolean;
+    permissions?: string;
 }
