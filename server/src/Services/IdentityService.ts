@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import _ from 'lodash';
-import { ApiResponse, ResponseFail, ResponseOk } from '../common/ApiResponse';
+import { ResponseFail, ResponseOk } from '../common/ApiResponse';
 import Role from '../Models/Role';
 import { AuthUser, NewUser, LoginParams, AppUser } from '../types/Identity';
 import User from './../Models/User';
@@ -89,3 +89,20 @@ export const logout = (req: Request, res: Response) => {
     if (req.session.user) delete req.session.user;
     return res.json(ResponseOk());
 };
+
+export const getUser = async(req: Request, res: Response) => {
+    try{
+        const user = await User.findOne({id: req.params.id})
+        if (!user) throw new Error('User not found');
+        const result = {
+            id: user.id,
+            fullName: user.fullName,
+            emailAddress: user.emailAddress,
+            amount: user.amount,
+            userCode: user.userCode,
+        }
+        return res.json(ResponseOk(result));
+    }catch(err:any){
+        return res.json(ResponseFail(err));
+    }
+}

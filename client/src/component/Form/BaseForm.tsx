@@ -75,9 +75,7 @@ const BaseForm = React.forwardRef<BaseFormRef, BaseFormProps>((props, ref) => {
                 }}
             >
                 {props.baseFormItem?.map(item => {
-                    console.log(item)
-                    console.log('asd',props.initialValues);
-                    
+                  
                     return (
                         <Form.Item key={item.name} {...item}>
                             {item.children}

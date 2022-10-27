@@ -4,8 +4,8 @@ import CommonController from './CommonController';
 import IdentityController from './IdentityController';
 import MenuController from './MenuController';
 import RoleController from './RoleController';
-import SubjectController from './SubjectController';
 import TuitionController from './TuitionController';
+import SemesterController from './SemesterController';
 
 const route = (app: Application) => {
     app.use('/api/identity', IdentityController);
@@ -13,7 +13,7 @@ const route = (app: Application) => {
     app.use('/api/role', Authenticate, RoleController);
     app.use('/api/common', Authenticate, CommonController);
     app.use('/api/tuition', Authenticate, TuitionController);
-    app.use('/api/subject', Authenticate, SubjectController);
+    app.use('/api/semester', Authenticate, SemesterController);
 };
 
 export default route;

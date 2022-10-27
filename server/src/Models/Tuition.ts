@@ -2,7 +2,7 @@ import { Schema, Model, model } from 'mongoose';
 import crypto from 'crypto';
 import { Identifier } from '../types/shared';
 import { IUser } from './User';
-import { ISubject } from './Subject';
+
 
 export type StatusTuition = {
     WAITING: 'waiting';
@@ -12,27 +12,32 @@ export type StatusTuition = {
 
 export interface ITuition {
     id: Identifier;
-    user: IUser;
-    subject: ISubject;
+    userId: Identifier;
+    userPaymentId: Identifier;
     tuitionCode: string;
     totalFee: Number;
     status: string;
     startDate: Date;
+    semester:string;
     endDate: Date;
     expiredAt: Date;
 }
 type TuitionModel = Model<ITuition, {}, {}>;
 
-const schema = new Schema<ITuition>({
-    id: { type: String, unique: true, required: true, default: crypto.randomUUID() },
-    user: { type: Object, ref: 'User.id'},
-    subject: [{ type: Object, ref: 'Subject.id' }],
-    tuitionCode: { type: String, unique: true, required: true },
-    totalFee: { type: Number, default: 0 , required: true },
-    status: { type: String, default: 'waiting' },
-    expiredAt: { type: Date, default: Date.now() + 86400000 }, // 1 day
-},{timestamps: true});
+const schema = new Schema<ITuition>(
+    {
+        id: { type: String, unique: true, required: true, default: crypto.randomUUID() },
+        userId: { type: String, unique: true, required: true },
+        userPaymentId: { type: String, unique: true},
+        tuitionCode: { type: String, unique: true, required: true },
+        semester: { type: String, required: true },
+        totalFee: { type: Number, default: 0, required: true },
+        status: { type: String, default: 'waiting' },
+        expiredAt: { type: Date, default: Date.now() + 86400000 }, // 1 day
+    },
+    { timestamps: true },
+);
 
 const Tuition = model<ITuition, TuitionModel>('Tuition', schema);
 
-export default Tuition; 
+export default Tuition;

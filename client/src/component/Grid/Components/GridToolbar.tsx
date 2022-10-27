@@ -10,6 +10,7 @@ type ToolbarType = {
 };
 
 export type GridToolbarProps = {
+    buttonNameCreate?: string;
     hasCreateButton?: boolean;
     hasRefreshButton?: boolean;
     onClickCreateButton?: () => void;
@@ -27,7 +28,7 @@ const basicToolbar = (props: GridToolbarProps) => {
                     onClick={() => props.onClickCreateButton?.()}
                     className={'btn-create'}
                     variant={'success'}
-                    title="Tạo mới"
+                    title={props.buttonNameCreate ?? 'Tạo mới'}
                     startIcon={faPlus}
                 />
             )}

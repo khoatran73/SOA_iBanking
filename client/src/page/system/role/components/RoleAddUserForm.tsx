@@ -40,8 +40,6 @@ const RoleAddUserForm: React.FC<Props> = props => {
             roleId: props.id,
             userIds: state.choseKey,
         };
-        console.log('🚀 ~ file: RoleAddUserForm.tsx ~ line 41 ~ onSubmit ~ body', body);
-
         const response = await requestApi('put', UPDATE_USER_ROLE_API, body);
 
         if (response.data?.success) {

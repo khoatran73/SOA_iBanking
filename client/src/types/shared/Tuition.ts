@@ -1,13 +1,15 @@
 import { Identifier } from '.';
-import { AppUser } from '../ums/AuthUser';
+
 export interface ITuition {
     id: Identifier;
-    user: AppUser;
-    userPayment: AppUser;
+    userName: string;
+    userPaymentName: string;
     subject: string;
+    userCode: string;
     tuitionCode: string;
     totalFee: number;
     status: string;
+    semester: string;
     startDate: Date;
     endDate: Date;
     expiredAt: Date;

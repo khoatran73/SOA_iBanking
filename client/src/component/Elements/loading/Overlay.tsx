@@ -1,5 +1,6 @@
 import React, { CSSProperties, forwardRef, useImperativeHandle } from 'react';
 import { Spin } from 'antd';
+import { useMergeState } from '~/hook/useMergeState';
 
 export interface OverlayRef {
     open: () => void;
@@ -13,37 +14,37 @@ interface IProps {
     isPercentage?: boolean;
 }
 const Overlay = forwardRef<OverlayRef, IProps>((props, ref) => {
-    // const [state, setState] = useMergeState({
-    //     open: false,
-    //     processValue: 0,
-    //     defaultText: props.defaultText || '',
-    // });
-    // const open = () => {
-    //     setState({
-    //         open: true,
-    //         processValue: 0,
-    //     });
-    // };
+    const [state, setState] = useMergeState({
+        open: false,
+        processValue: 0,
+        defaultText: props.defaultText || '',
+    });
+    const open = () => {
+        setState({
+            open: true,
+            processValue: 0,
+        });
+    };
 
-    // const setProcessValue = (processValue: number) => setState({ processValue });
+    const setProcessValue = (processValue: number) => setState({ processValue });
 
-    // const setDefaultText = (defaultText: string) => setState({ defaultText });
+    const setDefaultText = (defaultText: string) => setState({ defaultText });
 
-    // const close = () => {
-    //     setState({
-    //         processValue: 100,
-    //         open: false,
-    //     });
-    // };
+    const close = () => {
+        setState({
+            processValue: 100,
+            open: false,
+        });
+    };
 
-    // useImperativeHandle(ref, () => ({
-    //     open: open,
-    //     close: close,
-    //     setValue: (val: number) => setProcessValue(val),
-    //     setDefaultText: (val: string) => setDefaultText(val),
-    // }));
+    useImperativeHandle(ref, () => ({
+        open: open,
+        close: close,
+        setValue: (val: number) => setProcessValue(val),
+        setDefaultText: (val: string) => setDefaultText(val),
+    }));
 
-    // if (!state?.open) return null;
+    if (!state?.open) return null;
     return (
         <div
             style={Object.assign(
@@ -70,13 +71,13 @@ const Overlay = forwardRef<OverlayRef, IProps>((props, ref) => {
                 )}
             >
                 <div className="loading">
-                    {/* <Spin
+                    <Spin
                         tip={
                             props.isPercentage
                                 ? `${Math.round(state?.processValue ?? 0)}% ${state?.defaultText}`
                                 : state?.defaultText
                         }
-                    /> */}
+                    />
                 </div>
             </div>
         </div>
