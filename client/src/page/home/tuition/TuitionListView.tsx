@@ -225,7 +225,7 @@ const TuitionListView: React.FC = () => {
                     hasRefreshButton={true}
                     onClickRefreshButton={onPaymentSuggest}
                     onClickCreateButton={onCreate}
-                    renderActionRightToolBar={() => {
+                    renderAdditionLeftToolBar={() => {
                         return (
                             <div className={'flex ml-0 w-full mb-2'}>
                                 <span

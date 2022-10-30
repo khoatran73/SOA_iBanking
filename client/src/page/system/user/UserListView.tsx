@@ -141,7 +141,7 @@ const UserListView: React.FC = () => {
                     hasCreateButton={true}
                     hasRefreshButton={false}
                     onClickCreateButton={onCreate}
-                    renderActionRightToolBar={() => {
+                    renderAdditionLeftToolBar={() => {
                         return (
                             <div className={'flex ml-0 w-full mb-2'}>
                                 <span

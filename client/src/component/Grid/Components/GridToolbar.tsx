@@ -16,31 +16,35 @@ export type GridToolbarProps = {
     hasRefreshButton?: boolean;
     onClickCreateButton?: () => void;
     onClickRefreshButton?: () => void;
-    renderActionRightToolBar?: () => JSX.Element;
+    renderAdditionLeftToolBar?: () => JSX.Element;
+    renderAdditionRightToolBar?: () => JSX.Element;
 } & ToolbarType;
 
 const basicToolbar = (props: GridToolbarProps) => {
     const { hasCreateButton = true, hasRefreshButton = true } = props;
     return (
-        <div className="flex items-center justify-end">
-            {props.renderActionRightToolBar?.()}
-            {hasCreateButton && (
-                <ButtonBase
-                    onClick={() => props.onClickCreateButton?.()}
-                    className={'btn-create'}
-                    variant={'success'}
-                    title={props.buttonNameCreate ?? 'Tạo mới'}
-                    startIcon={faPlus}
-                />
-            )}
-            {hasRefreshButton && (
-                <ButtonBase
-                    variant={'primary'}
-                    title={props.buttonNameRefresh ?? 'Làm mới'}
-                    startIcon={faSync}
-                    onClick={() => props.onClickRefreshButton?.()}
-                />
-            )}
+        <div className="flex items-center justify-between">
+            <div className="flex-1">{props.renderAdditionLeftToolBar?.()}</div>
+            <div className="flex-1 flex items-center justify-end">
+                {props.renderAdditionRightToolBar?.()}
+                {hasCreateButton && (
+                    <ButtonBase
+                        onClick={() => props.onClickCreateButton?.()}
+                        className={'btn-create'}
+                        variant={'success'}
+                        title={props.buttonNameCreate ?? 'Tạo mới'}
+                        startIcon={faPlus}
+                    />
+                )}
+                {hasRefreshButton && (
+                    <ButtonBase
+                        variant={'primary'}
+                        title={props.buttonNameRefresh ?? 'Làm mới'}
+                        startIcon={faSync}
+                        onClick={() => props.onClickRefreshButton?.()}
+                    />
+                )}
+            </div>
         </div>
     );
 };

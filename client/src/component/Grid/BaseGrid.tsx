@@ -152,19 +152,12 @@ const BaseGrid = React.forwardRef<BaseGridRef, BaseGridProps>((props, ref) => {
                         columnDefs={customColDefs}
                         defaultColDef={{
                             resizable: true,
-                            suppressSizeToFit: true,
                             floatingFilter: false,
-                            suppressAutoSize: true,
                             ...props.defaultColDef,
                         }}
                         suppressAutoSize
                         pagination={pagination}
-                        // onGridReady={() => {
-                        //     // console.log(123);
-                        //     setTimeout(function () {
-                        //         gridRef.current?.api.sizeColumnsToFit();
-                        //     }, 200);
-                        // }}
+                        onGridReady={(params) => params.api.sizeColumnsToFit()}
                         treeData={props.treeData}
                         animateRows
                         getDataPath={props.getDataPath}

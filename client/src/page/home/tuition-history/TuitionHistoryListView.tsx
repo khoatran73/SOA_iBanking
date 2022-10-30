@@ -181,7 +181,7 @@ const TuitionHistoryListView: React.FC = () => {
                     hasCreateButton={false}
                     hasRefreshButton={false}
                     onClickCreateButton={onPaymentSuggest}
-                    renderActionRightToolBar={() => {
+                    renderAdditionLeftToolBar={() => {
                         return (
                             <div className={'flex ml-0 w-full mb-2'}>
                                 <span
