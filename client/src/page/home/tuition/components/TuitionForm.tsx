@@ -8,7 +8,7 @@ import { AppModalContainer } from '~/component/Layout/AppModalContainer';
 import ModalBase, { ModalRef } from '~/component/Modal/ModalBase';
 import NotificationConstant from '~/configs/contants';
 import { requestApi } from '~/lib/axios';
-import { ComboOption, Identifier, ITuition } from '~/types/shared';
+import { Identifier, ITuition } from '~/types/shared';
 import NotifyUtil from '~/util/NotifyUtil';
 import { PAYMENT_REQUEST_API, PAYMENT_SUGGEST_API } from '../api/api';
 import '../style/tuition.scss';

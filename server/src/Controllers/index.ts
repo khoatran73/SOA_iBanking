@@ -6,9 +6,11 @@ import MenuController from './MenuController';
 import RoleController from './RoleController';
 import TuitionController from './TuitionController';
 import SemesterController from './SemesterController';
+import UserController from './UserController';
 
 const route = (app: Application) => {
     app.use('/api/identity', IdentityController);
+    app.use('/api/user', UserController);
     app.use('/api/menu', Authenticate, MenuController);
     app.use('/api/role', Authenticate, RoleController);
     app.use('/api/common', Authenticate, CommonController);

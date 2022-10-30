@@ -14,6 +14,7 @@ const UserListView = React.lazy(() => import('~/page/system/user/UserListView'))
 
 //home 
 const TuitionListView = React.lazy(() => import('~/page/home/tuition/TuitionListView'));
+const TuitionHistoryListView = React.lazy(() => import('~/page/home/tuition-history/TuitionHistoryListView'));
 
 const routeList = [
     {
@@ -55,6 +56,10 @@ const routeList = [
                     {
                         path: 'tuition',
                         element: <TuitionListView />,
+                    },
+                    {
+                        path: 'tuition-history',
+                        element: <TuitionHistoryListView />,
                     }
                 ],
             },

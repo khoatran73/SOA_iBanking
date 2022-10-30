@@ -13,7 +13,7 @@ export type StatusTuition = {
 export interface ITuition {
     id: Identifier;
     userId: Identifier;
-    userPaymentId: Identifier;
+    userPaymentId?: Identifier;
     tuitionCode: string;
     totalFee: Number;
     status: string;
@@ -27,8 +27,8 @@ type TuitionModel = Model<ITuition, {}, {}>;
 const schema = new Schema<ITuition>(
     {
         id: { type: String, unique: true, required: true, default: crypto.randomUUID() },
-        userId: { type: String, unique: true, required: true },
-        userPaymentId: { type: String, unique: true},
+        userId: { type: String, required: true },
+        userPaymentId: { type: String},
         tuitionCode: { type: String, unique: true, required: true },
         semester: { type: String, required: true },
         totalFee: { type: Number, default: 0, required: true },

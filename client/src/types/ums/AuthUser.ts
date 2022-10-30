@@ -9,10 +9,22 @@ export interface AppUser {
     username: string;
     fullName?: string;
     isSupper: boolean;
-    email: string;
+    emailAddress: string;
     phoneNumber?: string;
     orgId?: string;
     userCode?: string;
+    amount?: number;
+}
+
+export interface IUser {
+    id: string;
+    username: string;
+    fullName?: string;
+    isAdmin: boolean;
+    emailAddress: string;
+    phoneNumber?: string;
+    password?: string;
+    rePassword?: string;
     amount?: number;
 }
 

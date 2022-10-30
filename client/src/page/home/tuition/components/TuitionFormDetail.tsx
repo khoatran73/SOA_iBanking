@@ -1,5 +1,5 @@
 import { faClose, faMoneyBill } from '@fortawesome/free-solid-svg-icons';
-import { Input, Select } from 'antd';
+import { DatePicker, Input, Select } from 'antd';
 import _ from 'lodash';
 import React, { useRef, useState } from 'react';
 import { ButtonBase } from '~/component/Elements/Button/ButtonBase';
@@ -13,7 +13,7 @@ import '../style/tuition.scss';
 import TuitionPayment from './TuitionPayment';
 import TuitionStatus from './TuitionStatus';
 import Overlay, { OverlayRef } from '~/component/Elements/loading/Overlay';
-
+import moment from 'moment';
 
 interface Props {
     initialValues?: any;
@@ -31,11 +31,21 @@ const TuitionFormDetail: React.FC<Props> = props => {
     const formRef = useRef<BaseFormRef>(null);
     const modalRef = useRef<ModalRef>(null);
     const overlayRef = useRef<OverlayRef>(null);
-    const { initialValues } = props;
+    let { initialValues } = props;
     const status = _.get(
         initialValues,
         nameof.full<ITuition>(x => x.status),
     );
+    const expiredAt = moment(
+        _.get(
+            initialValues,
+            nameof.full<ITuition>(x => x.expiredAt),
+        ),
+    );
+    initialValues = {
+        ...initialValues,
+        expiredAt: expiredAt,
+    };
     const isShowPaymentRequestBtn = status === 'waiting' ? true : false;
 
     const fieldDef = [
@@ -70,7 +80,9 @@ const TuitionFormDetail: React.FC<Props> = props => {
         {
             label: 'Hạn thanh toán',
             name: nameof.full<ITuition>(x => x.expiredAt),
-            children: <Input style={{ color: '#333' }} />,
+            children: (
+                <DatePicker  style={{ color: '#333' }} format={'DD/MM/YYYY HH:mm'} />
+            ),
         },
         {
             label: 'Tổng học phí',

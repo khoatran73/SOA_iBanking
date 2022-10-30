@@ -1,8 +1,11 @@
 import { Request, Response } from 'express';
 import _ from 'lodash';
 import { ResponseFail, ResponseOk } from '../common/ApiResponse';
+import { PaginatedListConstructor, PaginatedListQuery } from '../common/PaginatedList';
+import SendMail, { SendMailProps } from '../common/SendMail';
 import Role from '../Models/Role';
 import { AuthUser, NewUser, LoginParams, AppUser } from '../types/Identity';
+import { ComboOption } from '../types/shared';
 import User from './../Models/User';
 import UserRole from './../Models/UserRole';
 
@@ -12,6 +15,25 @@ declare module 'express-session' {
     }
 }
 
+export const index = async (req: Request<any, any, any, PaginatedListQuery>, res: Response) => {
+    const users = await User.find();
+
+    const results = users.map(user =>{
+        return {
+            id: user.id,
+            username: user.username,
+            fullName: user.fullName,
+            isSupper: user.isAdmin,
+            emailAddress: user.emailAddress,
+            phoneNumber: user.phoneNumber,
+            amount: user.amount,
+        } as AppUser;
+    });
+    
+    const response = PaginatedListConstructor<any>(results, req.query.offset, req.query.limit);
+
+    return res.json(ResponseOk<AppUser[]>(response));
+}
 export const checkLogin = async (req: Request, res: Response) => {
     const user = req.session.user;
     if (user) {
@@ -32,19 +54,33 @@ export const checkLogin = async (req: Request, res: Response) => {
 
 export const addUser = async (req: Request<any, any, NewUser>, res: Response) => {
     try {
+        const data = req.body;
         const isExistUser = Boolean(await User.findOne({ username: req.body.username }));
-
+        const password = req.body.password ?? Math.floor(Math.random() * 1000000 + 1).toString();;
+        const userCode = `519${Math.floor(Math.random() * 100000 + 1).toString()}`
         if (isExistUser) {
             return res.json(ResponseFail('UserName existed!'));
         }
 
         const user = new User({
-            ...req.body,
+            ...data,
+            username:data.username,
+            userCode: userCode,
         });
-
-        user.setPassword(req.body.password);
+        user.setPassword(password);
         user.save();
-
+        const paramSendMail: SendMailProps = {
+            emailTo: user.emailAddress,
+            subject:'Thông tin tài khoản!',
+            html: `
+                <div><p>Xin chào <b>${user.fullName}</b></a></p></div>
+                <div><p>Mã sinh viên của bạn là: <b>${user.userCode}</b></a></p></div>
+                <div><p>Bạn vừa tạo mới tài khoản với tên đăng nhập: <strong style="font-size:20px;color:red">${user.username}</strong> </p></div> <br/><br/>
+                <div><p>Mật khẩu của bạn là: <strong style="font-size:20px;color:red">${password}</strong></p></div> <br/><br/>
+                <p>Xin cảm ơn,</p>
+            `,
+        }
+        await SendMail(paramSendMail);
         return res.json(ResponseOk());
     } catch (err) {
         return res.json(ResponseFail(_.get(err, 'message')));
@@ -71,13 +107,13 @@ export const login = async (req: Request<any, any, LoginParams>, res: Response) 
     const result: AuthUser = {
         rights: rolesCode,
         user: {
-            email: user.emailAddress,
+            emailAddress: user.emailAddress,
             fullName: user.fullName,
             id: user.id,
             isSupper: isSupper,
             username: user.username,
             phoneNumber: user.phoneNumber,
-            amount: user.amount
+            amount: user.amount,
         },
     };
     req.session.user = result.user;
@@ -90,9 +126,9 @@ export const logout = (req: Request, res: Response) => {
     return res.json(ResponseOk());
 };
 
-export const getUser = async(req: Request, res: Response) => {
-    try{
-        const user = await User.findOne({id: req.params.id})
+export const getUser = async (req: Request, res: Response) => {
+    try {
+        const user = await User.findOne({ id: req.params.id });
         if (!user) throw new Error('User not found');
         const result = {
             id: user.id,
@@ -100,9 +136,35 @@ export const getUser = async(req: Request, res: Response) => {
             emailAddress: user.emailAddress,
             amount: user.amount,
             userCode: user.userCode,
-        }
+        };
         return res.json(ResponseOk(result));
-    }catch(err:any){
+    } catch (err: any) {
         return res.json(ResponseFail(err));
     }
-}
+};
+
+export const comboUser = async (req: Request, res: Response) => {
+    try {
+        const users = await User.find();
+        const result = users.map(
+            user =>
+                ({
+                    value: user.id,
+                    label: user.fullName,
+                } as ComboOption),
+        );
+
+        return res.json(ResponseOk(result));
+    } catch (err: any) {
+        return res.json(ResponseFail(err));
+    }
+};
+
+export const remove = async (req: Request, res: Response) => {
+    try {
+        await User.findOneAndDelete({id: req.params.id})
+        return res.json(ResponseOk());
+    } catch (err: any) {
+        return res.json(ResponseFail(err));
+    }
+};

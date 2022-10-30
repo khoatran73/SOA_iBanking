@@ -2,6 +2,7 @@ import { Identifier } from '.';
 
 export interface ITuition {
     id: Identifier;
+    userId: Identifier;
     userName: string;
     userPaymentName: string;
     subject: string;

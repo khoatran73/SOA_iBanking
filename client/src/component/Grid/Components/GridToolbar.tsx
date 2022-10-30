@@ -11,6 +11,7 @@ type ToolbarType = {
 
 export type GridToolbarProps = {
     buttonNameCreate?: string;
+    buttonNameRefresh?: string;
     hasCreateButton?: boolean;
     hasRefreshButton?: boolean;
     onClickCreateButton?: () => void;
@@ -35,7 +36,7 @@ const basicToolbar = (props: GridToolbarProps) => {
             {hasRefreshButton && (
                 <ButtonBase
                     variant={'primary'}
-                    title={'Làm mới'}
+                    title={props.buttonNameRefresh ?? 'Làm mới'}
                     startIcon={faSync}
                     onClick={() => props.onClickRefreshButton?.()}
                 />

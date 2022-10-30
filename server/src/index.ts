@@ -9,7 +9,7 @@ const oneDay = 24 * 60 * 60 * 1000;
 
 dotenv.config();
 const port: number = Number(process.env.PORT) || 5000;
-const dbUrl: string | undefined = process.env.MONGO_URL_ATLAS;
+const dbUrl: string | undefined = process.env.MONGO_URL_LOCAL ?? process.env.MONGO_URL_ATLAS;
 const app: Application = express();
 const server = http.createServer(app);
 

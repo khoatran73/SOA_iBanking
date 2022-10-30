@@ -1,61 +1,54 @@
-import { GetDataPath } from '@ag-grid-community/core';
+
+import { GetDataPath } from 'ag-grid-community';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import Loading from 'react-loading';
 import { useSelector } from 'react-redux';
 import { RootState } from '~/AppStore';
-import Loading from '~/component/Elements/loading/Loading';
 import Overlay, { OverlayRef } from '~/component/Elements/loading/Overlay';
 import BaseGrid, { BaseGridColDef, BaseGridRef } from '~/component/Grid/BaseGrid';
 import { GridToolbar } from '~/component/Grid/Components/GridToolbar';
 import { AppContainer } from '~/component/Layout/AppContainer';
 import ModalBase, { ModalRef } from '~/component/Modal/ModalBase';
-import NotificationConstant from '~/configs/contants';
 import { useBaseGrid } from '~/hook/useBaseGrid';
 import { useMergeState } from '~/hook/useMergeState';
 import { requestApi } from '~/lib/axios';
-import { GET_USER_BY_ID_API, USER_COMBO_API } from '~/page/system/user/api/api';
+import { GET_USER_BY_ID_API } from '~/page/system/user/api/api';
 import { Menu } from '~/types/layout/Menu';
 import { ComboOption, ITuition } from '~/types/shared';
 import { AppUser } from '~/types/ums/AuthUser';
-import NotifyUtil from '~/util/NotifyUtil';
-import { DELETE_API, INDEX_API, SEMESTER_COMBO_API} from './api/api';
-import TuitionForm from './components/TuitionForm';
-import TuitionFormCreate from './components/TuitionFormCreate';
-import TuitionFormDetail from './components/TuitionFormDetail';
-import TuitionStatus from './components/TuitionStatus';
+import { SEMESTER_COMBO_API, TUITION_HISTORY_API } from '../tuition/api/api';
+import TuitionForm from '../tuition/components/TuitionForm';
+import TuitionFormDetail from '../tuition/components/TuitionFormDetail';
+import TuitionStatus from '../tuition/components/TuitionStatus';
+
 interface State {
     loading: boolean;
     semesters: ComboOption[];
-    users: ComboOption[];
 }
-const TuitionListView: React.FC = () => {
+const TuitionHistoryListView: React.FC = () => {
     const { authUser } = useSelector((state: RootState) => state.authData);
     const overlayRef = useRef<OverlayRef>(null);
     const gridRef = useRef<BaseGridRef>(null);
     const modalRef = useRef<ModalRef>(null);
     const [user, setUser] = useState<AppUser | null>(null);
     const gridController = useBaseGrid<ITuition>({
-        url: INDEX_API,
+        url: TUITION_HISTORY_API,
         gridRef: gridRef,
     });
     const [state, setState] = useMergeState<State>({
         loading: true,
         semesters: [],
-        users: [],
     });
 
     const fetchComBoPermission = async () => {
-        const semester = await requestApi('get', SEMESTER_COMBO_API);
-        const user = await requestApi('get', USER_COMBO_API);
-        Promise.all([semester, user]).then(([semester, user]) => {
-            if (semester.data.success && user.data.success) {
-                setState({
-                    loading: false,
-                    semesters: semester.data.result,
-                    users: user.data.result,
-                });
-            }
-        });
+        const res = await requestApi('get', SEMESTER_COMBO_API);
+        if (res.data?.success) {
+            setState({
+                loading: false,
+                semesters: res.data?.result,
+            });
+        }
     };
 
     useEffect(() => {
@@ -67,10 +60,16 @@ const TuitionListView: React.FC = () => {
         fetchComBoPermission();
     }, [gridController?.data]);
 
+    const getDataPath = useMemo<GetDataPath>(() => {
+        return (data: Menu) => {
+            return data?.group ?? [];
+        };
+    }, []);
+
     const onPaymentSuggest = async () => {
         modalRef.current?.onOpen(
             <TuitionForm
-                initialValues={{
+                initialValues={{ 
                     semesters: state.semesters,
                     userPaymentName: authUser?.user?.fullName,
                     userPaymentId: authUser?.user?.id,
@@ -116,42 +115,6 @@ const TuitionListView: React.FC = () => {
         });
     };
 
-    const onCreate = () => {
-        modalRef.current?.onOpen(
-            <TuitionFormCreate
-                disabled={false}
-                initialValues={{
-                    semesters: state.semesters,
-                    users: state.users,
-                }}
-                onSubmitSuccessfully={() => {
-                    modalRef.current?.onClose();
-                    gridController?.reloadData();
-                }}
-                onClose={modalRef.current?.onClose}
-            />,
-            'Tạo mới học phí',
-            '50%',
-        );
-    };
-
-    const ondelete = (data: any) => {
-        requestApi('delete', `${DELETE_API}/${data.id}`).then(response => {
-            if (response.data?.success) {
-                NotifyUtil.success(NotificationConstant.TITLE, 'Xóa thành công');
-                gridController?.reloadData();
-                return;
-            } else {
-                NotifyUtil.error(NotificationConstant.TITLE, `${response.data?.message}`);
-            }
-        });
-    };
-
-    const getDataPath = useMemo<GetDataPath>(() => {
-        return (data: Menu) => {
-            return data.group ?? [];
-        };
-    }, []);
 
     const MenuColDefs: BaseGridColDef[] = [
         {
@@ -206,12 +169,8 @@ const TuitionListView: React.FC = () => {
                 pagination={false}
                 actionRowsList={{
                     hasDetailBtn: true,
-                    hasDeleteBtn: authUser?.user.isSupper,
                     onClickDetailBtn: (dataRow: any) => {
                         ondetail(dataRow);
-                    },
-                    onClickDeleteBtn: (dataRow: any) => {
-                        ondelete(dataRow);
                     },
                 }}
                 actionRowsWidth={120}
@@ -219,12 +178,9 @@ const TuitionListView: React.FC = () => {
                 groupDefaultExpanded={-1}
             >
                 <GridToolbar
-                    buttonNameCreate="Tạo mới"
-                    buttonNameRefresh="Thanh toán hộ"
-                    hasCreateButton
-                    hasRefreshButton={true}
-                    onClickRefreshButton={onPaymentSuggest}
-                    onClickCreateButton={onCreate}
+                    hasCreateButton={false}
+                    hasRefreshButton={false}
+                    onClickCreateButton={onPaymentSuggest}
                     renderActionRightToolBar={() => {
                         return (
                             <div className={'flex ml-0 w-full mb-2'}>
@@ -235,7 +191,7 @@ const TuitionListView: React.FC = () => {
                                         color: '#3d9bdb',
                                     }}
                                 >
-                                    Tài khoản hiện có: <b>{user?.amount} &#8363;</b>
+                                    <b>Lịch sử thanh toán:</b>
                                 </span>
                             </div>
                         );
@@ -248,4 +204,4 @@ const TuitionListView: React.FC = () => {
     );
 };
 
-export default TuitionListView;
+export default TuitionHistoryListView;

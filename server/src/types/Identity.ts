@@ -8,7 +8,7 @@ export type AppUser = {
     username: string;
     fullName: string;
     isSupper: boolean;
-    email: string;
+    emailAddress: string;
     phoneNumber?: string;
     amount?: number;
 }
