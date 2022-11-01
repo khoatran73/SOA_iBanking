@@ -81,7 +81,7 @@ const TuitionFormDetail: React.FC<Props> = props => {
             label: 'Hạn thanh toán',
             name: nameof.full<ITuition>(x => x.expiredAt),
             children: (
-                <DatePicker  style={{ color: '#333' }} format={'DD/MM/YYYY HH:mm'} />
+                <DatePicker  style={{ color: '#333', width: '100%' }} format={'DD/MM/YYYY HH:mm'} />
             ),
         },
         {

@@ -1,13 +1,14 @@
 import { Schema, Model, model } from 'mongoose';
-import crypto from 'crypto';
+import { generateUUID } from '../common/GenerateUUID';
 import { IRole } from '../types/Role';
+
 
 interface IRoleMethod {}
 
 type RoleModel = Model<IRole, {}, IRoleMethod>;
 
 const schema = new Schema<IRole, RoleModel, IRoleMethod>({
-    id: { type: String, unique: true, required: true, default: crypto.randomUUID() },
+    id: { type: String, unique: true, required: true, default: generateUUID() },
     code: { type: String, required: true },
     name: { type: String, required: true },
 });

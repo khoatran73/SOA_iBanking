@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import _ from 'lodash';
 import { ResponseFail, ResponseOk } from '../common/ApiResponse';
+import { generateUUID } from '../common/GenerateUUID';
 import { PaginatedListConstructor, PaginatedListQuery } from '../common/PaginatedList';
 import SendMail, { SendMailProps } from '../common/SendMail';
 import Role from '../Models/Role';
@@ -56,7 +57,7 @@ export const addUser = async (req: Request<any, any, NewUser>, res: Response) =>
     try {
         const data = req.body;
         const isExistUser = Boolean(await User.findOne({ username: req.body.username }));
-        const password = req.body.password ?? Math.floor(Math.random() * 1000000 + 1).toString();;
+        const password = req.body.password ?? "123456";
         const userCode = `519${Math.floor(Math.random() * 100000 + 1).toString()}`
         if (isExistUser) {
             return res.json(ResponseFail('UserName existed!'));
@@ -64,6 +65,7 @@ export const addUser = async (req: Request<any, any, NewUser>, res: Response) =>
 
         const user = new User({
             ...data,
+            id: generateUUID(),
             username:data.username,
             userCode: userCode,
         });

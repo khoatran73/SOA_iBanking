@@ -1,5 +1,6 @@
 import { faClose, faSave } from '@fortawesome/free-solid-svg-icons';
-import { Input, Select } from 'antd';
+import { DatePicker, Input, Select } from 'antd';
+import moment from 'moment';
 import React, {  useRef, useState } from 'react';
 import { ButtonBase } from '~/component/Elements/Button/ButtonBase';
 import Overlay, { OverlayRef } from '~/component/Elements/loading/Overlay';
@@ -28,6 +29,7 @@ const TuitionForm: React.FC<Props> = props => {
     const formRef = useRef<BaseFormRef>(null);
     const modalRef = useRef<ModalRef>(null);
     const overlayRef = useRef<OverlayRef>(null);
+
     const onPayment = async () => {
         const dataPayment = formRef.current?.getFieldsValue();
         overlayRef.current?.open();
@@ -94,7 +96,7 @@ const TuitionForm: React.FC<Props> = props => {
                         {
                             label: 'Hạn thanh toán',
                             name: nameof.full<ITuition>(x => x.expiredAt),
-                            children: <Input disabled={true} style={{ color: '#333' }} type="date" />,
+                            children: <DatePicker disabled={true} style={{ color: '#333', width: '100%' }}  format={'DD/MM/YYYY HH:mm'} />,
                         },
                         {
                             label: 'Tổng học phí',
@@ -107,6 +109,7 @@ const TuitionForm: React.FC<Props> = props => {
             formRef.current?.setFieldsValue({
                 ...response.data?.result,
                 userPaymentName: props.initialValues.userPaymentName,
+                expiredAt: moment(response.data?.result.expiredAt),
             });
         }else{
             NotifyUtil.error(NotificationConstant.TITLE, `${response.data?.message}`);

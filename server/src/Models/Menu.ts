@@ -1,6 +1,6 @@
 import { Schema, Model, model } from 'mongoose';
-import crypto from 'crypto';
 import { IMenu } from '../types/Menu';
+import { generateUUID } from '../common/GenerateUUID';
 
 interface IMenuMethod {
     setPath: (parentPath?: string) => void;
@@ -10,7 +10,7 @@ type MenuModel = Model<IMenu, {}, IMenuMethod>;
 
 const schema = new Schema<IMenu, MenuModel, IMenuMethod>(
     {
-        id: { type: String, unique: true, required: true, default: crypto.randomUUID() },
+        id: { type: String, unique: true, required: true, default: generateUUID() },
         name: { type: String, required: true },
         route: { type: String, unique: true, required: true },
         icon: { type: String, required: true },

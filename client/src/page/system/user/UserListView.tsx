@@ -11,8 +11,8 @@ import { AppContainer } from '~/component/Layout/AppContainer';
 import ModalBase, { ModalRef } from '~/component/Modal/ModalBase';
 import { useBaseGrid } from '~/hook/useBaseGrid';
 import { useMergeState } from '~/hook/useMergeState';
-import { requestApi } from '~/lib/axios';
-import { USER_LIST_API } from '~/page/system/user/api/api';
+import { baseDeleteApi, requestApi } from '~/lib/axios';
+import { DELETE_USER_BY_ID_API, USER_LIST_API } from '~/page/system/user/api/api';
 import { Menu } from '~/types/layout/Menu';
 import { ComboOption, ITuition } from '~/types/shared';
 import { AppUser, IUser } from '~/types/ums/AuthUser';
@@ -44,7 +44,7 @@ const UserListView: React.FC = () => {
     }, []);
 
     const ondetail = (dataRow: IUser) => {
-        console.log(dataRow)
+        console.log(dataRow);
         modalRef.current?.onOpen(
             <UserForm
                 readonly={true}
@@ -130,7 +130,8 @@ const UserListView: React.FC = () => {
                         ondetail(dataRow);
                     },
                     onClickDeleteBtn(data) {
-                        return;
+                        baseDeleteApi(DELETE_USER_BY_ID_API, data.id);
+                        gridController?.reloadData();
                     },
                 }}
                 actionRowsWidth={120}

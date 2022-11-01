@@ -1,6 +1,6 @@
 import { Schema, Model, model } from 'mongoose';
 import { Identifier } from '../types/shared';
-import crypto from 'crypto';
+import { generateUUID } from '../common/GenerateUUID';
 
 export interface ISemester{
     id:Identifier;
@@ -10,7 +10,7 @@ export interface ISemester{
 type SemesterModel = Model<ISemester, {}, {}>;
 
 const schema = new Schema<ISemester>({
-    id: { type: String, unique: true, required: true, default: crypto.randomUUID() },
+    id: { type: String, unique: true, required: true, default: generateUUID() },
     name: { type: String, required: true},
     code: { type: String, required: true, unique: true},
 },{timestamps: true});

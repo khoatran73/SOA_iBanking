@@ -87,7 +87,7 @@ const TuitionListView: React.FC = () => {
     };
 
     const ondetail = (dataRow: ITuition) => {
-        requestApi('get', `${GET_USER_BY_ID_API}/${authUser?.user?.id}`).then(response => {
+        requestApi('get', `${GET_USER_BY_ID_API}/${dataRow?.userId}`).then(response => {
             if (response.data.success) {
                 const user = response.data.result;
                 const data = {
@@ -221,7 +221,7 @@ const TuitionListView: React.FC = () => {
                 <GridToolbar
                     buttonNameCreate="Tạo mới"
                     buttonNameRefresh="Thanh toán hộ"
-                    hasCreateButton
+                    hasCreateButton={authUser?.user.isSupper}
                     hasRefreshButton={true}
                     onClickRefreshButton={onPaymentSuggest}
                     onClickCreateButton={onCreate}

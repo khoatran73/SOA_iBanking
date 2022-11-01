@@ -9,7 +9,7 @@ import NotificationConstant from '~/configs/contants';
 import { requestApi } from '~/lib/axios';
 import { Identifier } from '~/types/shared';
 import NotifyUtil from '~/util/NotifyUtil';
-import { PAYMENT_API } from '../api/api';
+import { PAYMENT_API, PAYMENT_REQUEST_API } from '../api/api';
 import '../style/tuition.scss';
 
 interface Props {
@@ -23,6 +23,7 @@ interface Props {
 const TuitionPayment: React.FC<Props> = props => {
     const formRef = useRef<BaseFormRef>(null);
     const [counter, setCounter] = React.useState(60);
+    const {initialValues} = props;
     useEffect(() => {
         const timerId = setInterval(() => {
             counter > 0 && setCounter(pre => pre - 1);
@@ -31,11 +32,11 @@ const TuitionPayment: React.FC<Props> = props => {
     }, [counter]);
 
     const onPayment = async () => {
-        const data = props.initialValues;
         const otpCode = formRef.current?.getFieldValue('otpCode');
         const payload = {
-            userPaymentId: data.userPayment?.id,
-            userId: data.userId,
+            id: initialValues?.id,
+            userPaymentId: initialValues.userPaymentId,
+            userId: initialValues.userId,
             otpCode: otpCode,
         };
         const response = await requestApi('post', `${PAYMENT_API}/${props.initialValues?.id}`, payload);
@@ -51,7 +52,10 @@ const TuitionPayment: React.FC<Props> = props => {
     };
 
     const onResentOtp = async () => {
-        setCounter(5);
+        const response = await requestApi('get', PAYMENT_REQUEST_API);
+        if (response.data?.success) {
+           setCounter(60);
+        }
     };
     return (
         <AppModalContainer>

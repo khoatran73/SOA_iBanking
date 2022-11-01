@@ -1,7 +1,6 @@
 import { Schema, Model, model } from 'mongoose';
-import crypto from 'crypto';
+import { generateUUID } from '../common/GenerateUUID';
 import { Identifier } from '../types/shared';
-import { IUser } from './User';
 
 
 export type StatusTuition = {
@@ -21,18 +20,20 @@ export interface ITuition {
     semester:string;
     endDate: Date;
     expiredAt: Date;
+    processing:boolean;
 }
 type TuitionModel = Model<ITuition, {}, {}>;
 
 const schema = new Schema<ITuition>(
     {
-        id: { type: String, unique: true, required: true, default: crypto.randomUUID() },
+        id: { type: String, unique: true, required: true, default: generateUUID() },
         userId: { type: String, required: true },
         userPaymentId: { type: String},
         tuitionCode: { type: String, unique: true, required: true },
         semester: { type: String, required: true },
         totalFee: { type: Number, default: 0, required: true },
         status: { type: String, default: 'waiting' },
+        processing: { type: Boolean, default: false },
         expiredAt: { type: Date, default: Date.now() + 86400000 }, // 1 day
     },
     { timestamps: true },

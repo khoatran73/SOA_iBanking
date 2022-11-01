@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
-import _, { isNull } from 'lodash';
+import _, { isEmpty, isNull } from 'lodash';
 import { ResponseFail, ResponseOk } from '../common/ApiResponse';
 import { PaginatedListConstructor, PaginatedListQuery } from '../common/PaginatedList';
 import Tuition, { ITuition } from '../Models/Tuition';
 import { startSession } from 'mongoose';
-import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 import User from '../Models/User';
 import Otp from '../Models/Otp';
 import SendMail, { SendMailProps } from '../common/SendMail';
+import { generateUUID } from '../common/GenerateUUID';
 dotenv.config();
 
 export const index = async (req: Request<any, any, any, PaginatedListQuery>, res: Response) => {
@@ -16,10 +16,11 @@ export const index = async (req: Request<any, any, any, PaginatedListQuery>, res
     let params: any = {
         status: 'waiting',
     };
-    params = !isSupper ? { userId: req.session.user?.id,...params } : params;
+    params = !isSupper ? { userId: req.session.user?.id, ...params } : params;
     const tuitionByUser = await Tuition.find(params);
-    const user = await User.findOne({ id: req.session.user?.id });
+    const users = await User.find();
     const tuitions = tuitionByUser.map(tuition => {
+        const user = users.find(user => user.id === tuition.userId);
         return {
             ...tuition.toJSON(),
             userId: user?.id,
@@ -44,7 +45,7 @@ export const paymentRequest = async (req: Request<any, any, any, PaginatedListQu
         });
         const paramSendMail: SendMailProps = {
             emailTo: userEmail,
-            subject:'Mã dùng một lần của bạn!',
+            subject: 'Mã dùng một lần của bạn!',
             html: `
                 <div><p>Xin chào <a href="#">${userEmail}</a></p></div>
                 <div><p>Chúng tôi đã nhận yêu cầu mã dùng một lần để dùng cho thanh toán học phí của bạn.</p></div> <br/><br/>
@@ -53,7 +54,7 @@ export const paymentRequest = async (req: Request<any, any, any, PaginatedListQu
                 <div><p>Có thể ai đó đã nhập địa chỉ email của bạn do nhầm lẫn.</p></div></br><br/>
                 <p>Xin cảm ơn,</p>
             `,
-        }
+        };
         await SendMail(paramSendMail);
         return res.json(ResponseOk());
     } catch (e: any) {
@@ -63,27 +64,36 @@ export const paymentRequest = async (req: Request<any, any, any, PaginatedListQu
 };
 
 export const create = async (req: Request<any, any, any, PaginatedListQuery>, res: Response) => {
+    const session = await startSession();
     try {
+        session.startTransaction();
         const data = req.body;
 
-        const isExistTuition = await Tuition.find({ 
-            tuitionCode: data?.tuitionCode 
-        }).find({ userId: data.userId, semester: data.semester});
-
-        if (isNull(isExistTuition)) {
-            return res.json(ResponseFail('Đã xã ra lỗi trong quá trình tạo học phí vui lòng kiểm tra lại!'));
+        const isExistTuition = await Tuition.find({$or:
+            [
+                {  tuitionCode: data?.tuitionCode},
+                { userId: data.userId, semester: data.semester }
+            ]
+        });
+  
+        if (!isEmpty(isExistTuition)) {
+            return res.json(ResponseFail('Mã học phí hoặc sinh viên  không được tạo trùng!'));
         }
         const tuition = new Tuition({
+            id: generateUUID(),
             userId: data.userId,
             tuitionCode: data.tuitionCode,
             totalFee: data.totalFee,
             semester: data.semester,
-            expiredAt: data.expiredAt
+            expiredAt: data.expiredAt,
         });
         tuition.save();
-
+        await session.commitTransaction();
+        session.endSession();
         return res.json(ResponseOk());
     } catch (err) {
+        await session.abortTransaction();
+        session.endSession();
         return res.json(ResponseFail(_.get(err, 'message')));
     }
 };
@@ -92,16 +102,16 @@ export const update = async (req: Request<any, any, any, PaginatedListQuery>, re
 
 export const payment = async (req: Request<any, any, any, PaginatedListQuery>, res: Response) => {
     const session = await startSession();
-    const userId = req.body.userPaymentId ?? req.body.userId;
+    const userId = req.body.userPaymentId;
     const otpCode = req.body.otpCode;
 
     try {
         session.startTransaction();
         const otp = await Otp.findOneAndRemove({ otpCode: otpCode });
-        const tuition = await Tuition.findOne({ id: req.params.id });
+        const tuition = await Tuition.findOneAndUpdate({ id: req.params.id, status: 'waiting' },{processing:true});
         const user = await User.findOne({ id: userId });
 
-        if (!Boolean(tuition)) throw new Error('Không có khoản nợ học phí nào!');
+        if (!Boolean(tuition)) throw new Error('Không có khoản nợ học phí nào, hoặc đã được thanh toán!');
         if (!Boolean(otp)) throw new Error('Mã xác thực không hợp lệ!');
         if (!Boolean(user)) throw new Error('Người dùng không tồn tại!');
 
@@ -114,12 +124,13 @@ export const payment = async (req: Request<any, any, any, PaginatedListQuery>, r
         tuition?.set({
             status: 'paid',
             userPaymentId: user?.id,
+            processing : false
         });
         await user?.save();
         await tuition?.save();
         const paramSendMail: SendMailProps = {
             emailTo: user?.emailAddress,
-            subject:'Hóa đơn điện tử !',
+            subject: 'Hóa đơn điện tử !',
             html: `
             <div>
             <span style="color: rgb(240, 119, 119)"><strong>Chú ý :</strong><i> Đây là email tự động vui lòng không phản hồi lại email này !</i></span>
@@ -145,7 +156,7 @@ export const payment = async (req: Request<any, any, any, PaginatedListQuery>, r
             </div>
         </div>
             `,
-        }
+        };
         await SendMail(paramSendMail);
         await session.commitTransaction();
         session.endSession();
@@ -179,8 +190,9 @@ export const getTuitionHistory = async (req: Request<any, any, any, PaginatedLis
         userPaymentId: req.session.user?.id,
         status: 'paid',
     });
-    const user = await User.findOne({ id: req.session.user?.id });
+    const users = await User.find();
     const tuitions = tuitionHistoryByUser.map(tuition => {
+        const user = users.find(user => user.id === tuition.userId);
         return {
             ...tuition.toJSON(),
             userId: user?.id,
@@ -194,11 +206,11 @@ export const getTuitionHistory = async (req: Request<any, any, any, PaginatedLis
     return res.json(ResponseOk<ITuition[]>(response));
 };
 
-export const remove = async (req: Request, res: Response)=> {
-    try{
-        await Tuition.findOneAndDelete({id: req.params.id})
+export const remove = async (req: Request, res: Response) => {
+    try {
+        await Tuition.findOneAndDelete({ id: req.params.id });
         return res.json(ResponseOk());
-    } catch(err){
-        return res.json(ResponseFail)
+    } catch (err) {
+        return res.json(ResponseFail);
     }
-}
+};

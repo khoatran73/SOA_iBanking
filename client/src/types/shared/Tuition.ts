@@ -14,4 +14,5 @@ export interface ITuition {
     startDate: Date;
     endDate: Date;
     expiredAt: Date;
+    updatedAt: Date;
 }

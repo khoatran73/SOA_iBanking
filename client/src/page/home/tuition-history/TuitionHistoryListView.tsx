@@ -1,6 +1,7 @@
 
 import { GetDataPath } from 'ag-grid-community';
 import _ from 'lodash';
+import moment from 'moment';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Loading from 'react-loading';
 import { useSelector } from 'react-redux';
@@ -118,6 +119,16 @@ const TuitionHistoryListView: React.FC = () => {
 
     const MenuColDefs: BaseGridColDef[] = [
         {
+            headerName: 'Thời gian',
+            field: nameof.full<ITuition>(x => x.updatedAt),
+            minWidth: 200,
+            flex: 1,
+            cellStyle: { textAlign: 'center', fontWeight: '500' },
+            cellRenderer: (data: any) => {
+                return moment(data.value).format('DD/MM/YYYY HH:mm');
+            },
+        },
+        {
             headerName: 'Tên sinh viên',
             field: nameof.full<ITuition>(x => x.userName),
             minWidth: 200,
@@ -180,7 +191,6 @@ const TuitionHistoryListView: React.FC = () => {
                 <GridToolbar
                     hasCreateButton={false}
                     hasRefreshButton={false}
-                    onClickCreateButton={onPaymentSuggest}
                     renderAdditionLeftToolBar={() => {
                         return (
                             <div className={'flex ml-0 w-full mb-2'}>
@@ -191,7 +201,7 @@ const TuitionHistoryListView: React.FC = () => {
                                         color: '#3d9bdb',
                                     }}
                                 >
-                                    <b>Lịch sử thanh toán:</b>
+                                    Lịch sử thanh toán
                                 </span>
                             </div>
                         );
