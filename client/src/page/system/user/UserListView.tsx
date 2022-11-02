@@ -1,3 +1,5 @@
+import { icon } from '@fortawesome/fontawesome-svg-core';
+import { faAppleAlt } from '@fortawesome/free-solid-svg-icons';
 import { GetDataPath } from 'ag-grid-community';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -44,7 +46,6 @@ const UserListView: React.FC = () => {
     }, []);
 
     const ondetail = (dataRow: IUser) => {
-        console.log(dataRow);
         modalRef.current?.onOpen(
             <UserForm
                 readonly={true}
@@ -56,7 +57,8 @@ const UserListView: React.FC = () => {
                 onClose={modalRef.current?.onClose}
             />,
             'Tạo mới tài khoản',
-            '50%',
+            '80%',
+            faAppleAlt
         );
     };
     const onCreate = () => {
@@ -67,9 +69,12 @@ const UserListView: React.FC = () => {
                     gridController?.reloadData();
                 }}
                 onClose={modalRef.current?.onClose}
+                
             />,
             'Tạo mới tài khoản',
             '50%',
+           
+        
         );
     };
 

@@ -1,7 +1,7 @@
 import { faClose, faSave } from '@fortawesome/free-solid-svg-icons';
 import { DatePicker, Input, Select } from 'antd';
 import moment from 'moment';
-import React, {  useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { ButtonBase } from '~/component/Elements/Button/ButtonBase';
 import Overlay, { OverlayRef } from '~/component/Elements/loading/Overlay';
 import BaseForm, { BaseFormRef } from '~/component/Form/BaseForm';
@@ -38,9 +38,9 @@ const TuitionForm: React.FC<Props> = props => {
             overlayRef.current?.close();
             return modalRef.current?.onOpen(
                 <TuitionPayment
-                    initialValues={{ 
+                    initialValues={{
                         ...dataPayment,
-                        userPaymentId: props.initialValues?.userPaymentId
+                        userPaymentId: props.initialValues?.userPaymentId,
                     }}
                     disabled={true}
                     onSubmitSuccessfully={props.onSubmitSuccessfully}
@@ -49,9 +49,11 @@ const TuitionForm: React.FC<Props> = props => {
                 'Xác nhận thanh toán',
                 '50%',
             );
+        } else {
+            overlayRef.current?.close();
         }
     };
-    const onPaymentSuggest =async () => {
+    const onPaymentSuggest = async () => {
         const params = formRef.current?.getFieldsValue();
         const response = await requestApi('get', `${PAYMENT_SUGGEST_API}`, params);
         if (response.data?.success) {
@@ -96,7 +98,13 @@ const TuitionForm: React.FC<Props> = props => {
                         {
                             label: 'Hạn thanh toán',
                             name: nameof.full<ITuition>(x => x.expiredAt),
-                            children: <DatePicker disabled={true} style={{ color: '#333', width: '100%' }}  format={'DD/MM/YYYY HH:mm'} />,
+                            children: (
+                                <DatePicker
+                                    disabled={true}
+                                    style={{ color: '#333', width: '100%' }}
+                                    format={'DD/MM/YYYY HH:mm'}
+                                />
+                            ),
                         },
                         {
                             label: 'Tổng học phí',
@@ -111,7 +119,7 @@ const TuitionForm: React.FC<Props> = props => {
                 userPaymentName: props.initialValues.userPaymentName,
                 expiredAt: moment(response.data?.result.expiredAt),
             });
-        }else{
+        } else {
             NotifyUtil.error(NotificationConstant.TITLE, `${response.data?.message}`);
         }
     };
