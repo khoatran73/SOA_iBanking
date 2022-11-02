@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/index', index);
 router.get('/tuition-history', getTuitionHistory);
-router.get('/request', paymentRequest);
+router.get('/request/:id', paymentRequest);
 router.get('/get-suggest', getTuitionSuggest);
 router.post('/create', create);
 router.post('/payment/:id', payment);

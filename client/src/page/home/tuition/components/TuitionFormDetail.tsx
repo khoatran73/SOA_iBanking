@@ -14,6 +14,8 @@ import TuitionPayment from './TuitionPayment';
 import TuitionStatus from './TuitionStatus';
 import Overlay, { OverlayRef } from '~/component/Elements/loading/Overlay';
 import moment from 'moment';
+import NotificationConstant from '~/configs/contants';
+import NotifyUtil from '~/util/NotifyUtil';
 
 interface Props {
     initialValues?: any;
@@ -120,7 +122,7 @@ const TuitionFormDetail: React.FC<Props> = props => {
             };
         });
         overlayRef.current?.open();
-        const response = await requestApi('get', PAYMENT_REQUEST_API);
+        const response = await requestApi('get', `${PAYMENT_REQUEST_API}/${dataPayment?.id}`);
         if (response.data?.success) {
             overlayRef.current?.close();
             return modalRef.current?.onOpen(
@@ -133,6 +135,10 @@ const TuitionFormDetail: React.FC<Props> = props => {
                 'Xác nhận thanh toán',
                 '50%',
             );
+        }else{
+            overlayRef.current?.close();
+            NotifyUtil.error(NotificationConstant.TITLE, `${response.data?.message}`);
+            props.onClose?.();
         }
     };
 

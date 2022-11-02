@@ -36,6 +36,11 @@ export const index = async (req: Request<any, any, any, PaginatedListQuery>, res
 
 export const paymentRequest = async (req: Request<any, any, any, PaginatedListQuery>, res: Response) => {
     try {
+        const id = req.params.id;
+        const tuition = await Tuition.findOne({ id: id, status: 'waiting', processing: false });
+        if (!Boolean(tuition)) {
+            return res.json(ResponseFail('Không có khoản nợ học phí nào, hoặc đã được thanh toán!'));
+        }
         const user = await User.findOne({ id: req.session.user?.id });
         const userEmail = user?.emailAddress;
         const codeOTP = Number(Math.floor(Math.random() * 1000000 + 1));
@@ -69,13 +74,10 @@ export const create = async (req: Request<any, any, any, PaginatedListQuery>, re
         session.startTransaction();
         const data = req.body;
 
-        const isExistTuition = await Tuition.find({$or:
-            [
-                {  tuitionCode: data?.tuitionCode},
-                { userId: data.userId, semester: data.semester }
-            ]
+        const isExistTuition = await Tuition.find({
+            $or: [{ tuitionCode: data?.tuitionCode }, { userId: data.userId, semester: data.semester }],
         });
-  
+
         if (!isEmpty(isExistTuition)) {
             return res.json(ResponseFail('Mã học phí hoặc sinh viên  không được tạo trùng!'));
         }
@@ -108,7 +110,7 @@ export const payment = async (req: Request<any, any, any, PaginatedListQuery>, r
     try {
         session.startTransaction();
         const otp = await Otp.findOneAndRemove({ otpCode: otpCode });
-        const tuition = await Tuition.findOneAndUpdate({ id: req.params.id, status: 'waiting' },{processing:true});
+        const tuition = await Tuition.findOneAndUpdate({ id: req.params.id, status: 'waiting' }, { processing: true });
         const user = await User.findOne({ id: userId });
 
         if (!Boolean(tuition)) throw new Error('Không có khoản nợ học phí nào, hoặc đã được thanh toán!');
@@ -124,7 +126,7 @@ export const payment = async (req: Request<any, any, any, PaginatedListQuery>, r
         tuition?.set({
             status: 'paid',
             userPaymentId: user?.id,
-            processing : false
+            processing: false,
         });
         await user?.save();
         await tuition?.save();

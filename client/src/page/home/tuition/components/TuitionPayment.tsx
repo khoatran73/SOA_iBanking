@@ -52,7 +52,7 @@ const TuitionPayment: React.FC<Props> = props => {
     };
 
     const onResentOtp = async () => {
-        const response = await requestApi('get', PAYMENT_REQUEST_API);
+        const response = await requestApi('get', `${PAYMENT_REQUEST_API}/${initialValues?.id}`);
         if (response.data?.success) {
            setCounter(60);
         }
