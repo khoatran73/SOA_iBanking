@@ -148,7 +148,7 @@ export const payment = async (req: Request<any, any, any, PaginatedListQuery>, r
                         <span><strong>Lí do :</strong>Thanh toán học phí học kì ${tuition?.semester}</span>
                     </li>
                     <li>
-                        <span><strong>Ngày thanh toán :</strong>${Date.now()}</span>
+                        <span><strong>Ngày thanh toán :</strong>${new Date().toLocaleString()}</span>
                     </li>
                     <li>
                         <span><strong>Số tiền :</strong>${tuition?.totalFee}</span>
